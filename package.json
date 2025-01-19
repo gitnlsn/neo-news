@@ -12,10 +12,11 @@
     "db:studio": "dotenv -e .env -- prisma studio",
     "dev": "next dev --turbo",
     "postinstall": "prisma generate",
-    "pipe": "npx biome check --fix --unsafe && npx biome format --write && next build && vitest run",
+    "pipe": "npx biome check --fix --unsafe && npm run typecheck && npm run build && npm run test",
     "preview": "next build && next start",
+    "test": "dotenv -e .env.test -e .env -- vitest run",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && biome check",
     "gen:use-case": "plop use-case"
   },
   "dependencies": {
@@ -65,6 +66,7 @@
     "prisma": "^5.14.0",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.5.3",
+    "vercel": "^39.3.0",
     "vitest": "^3.0.2"
   },
   "ct3aMetadata": {
