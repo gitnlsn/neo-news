@@ -39,6 +39,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Configure env file
+        run: |
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} link --scope 'nelsonkenzotamashiros-projects' --project 'neo-news' -y
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} pull --scope 'nelsonkenzotamashiros-projects' -y
+
       - name: Build Next.js Application
         run: npm run build
 
