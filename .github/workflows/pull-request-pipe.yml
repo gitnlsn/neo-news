@@ -23,8 +23,8 @@ jobs:
 
       - name: Configure env file
         run: |
-          pnpm vercel --token ${{ secrets.VERCEL_TOKEN }} link --scope 'nelsonkenzotamashiros-projects' --project 'neo-news' -y
-          pnpm vercel --token ${{ secrets.VERCEL_TOKEN }} pull --scope 'nelsonkenzotamashiros-projects' -y
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} link --scope 'nelsonkenzotamashiros-projects' --project 'neo-news' -y
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} pull --scope 'nelsonkenzotamashiros-projects' -y
 
   typecheck:
     runs-on: ubuntu-latest
