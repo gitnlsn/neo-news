@@ -43,6 +43,7 @@ jobs:
         run: |
           npx vercel --token ${{ secrets.VERCEL_TOKEN }} link --scope 'nelsonkenzotamashiros-projects' --project 'neo-news' -y
           npx vercel --token ${{ secrets.VERCEL_TOKEN }} pull --scope 'nelsonkenzotamashiros-projects' -y
+          mv ./.vercel/.env.development.local .env
 
       - name: Build Next.js Application
         run: npm run build
@@ -66,6 +67,7 @@ jobs:
         run: |
           npx vercel --token ${{ secrets.VERCEL_TOKEN }} link --scope 'nelsonkenzotamashiros-projects' --project 'neo-news' -y
           npx vercel --token ${{ secrets.VERCEL_TOKEN }} pull --scope 'nelsonkenzotamashiros-projects' -y
+          mv ./.vercel/.env.development.local .env
 
       - name: Run Vitest
         run: npm run test
