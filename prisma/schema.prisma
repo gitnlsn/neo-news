@@ -53,8 +53,9 @@ model User {
     accounts Account[]
     sessions Session[]
 
-    Post    Post[]
-    Profile Profile[]
+    Post Post[]
+
+    profile Profile?
 }
 
 model VerificationToken {
@@ -69,20 +70,25 @@ model Profile {
     id String @id @default(cuid())
 
     title       String
-    description String
-    logo        String
+    description String @db.Text
 
-    images Image[]
+    logo   Image?  @relation(name: "logo", fields: [logoId], references: [id])
+    logoId String? @unique
 
-    userId String
+    images Image[] @relation("profileImages")
+
     user   User   @relation(fields: [userId], references: [id])
+    userId String @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Post {
     id String @id @default(cuid())
 
     title   String
-    content String
+    content String @db.Text
 
     images Image[]
 
@@ -96,9 +102,13 @@ model Post {
 model Image {
     id String @id @default(uuid())
 
-    Profile   Profile? @relation(fields: [profileId], references: [id])
-    profileId String?
+    description String?
 
-    Post   Post?   @relation(fields: [postId], references: [id])
+    post   Post?   @relation(fields: [postId], references: [id])
     postId String?
+
+    profileFromLogo Profile? @relation(name: "logo")
+
+    profileFromImage Profile? @relation(name: "profileImages", fields: [profileId], references: [id])
+    profileId        String?
 }

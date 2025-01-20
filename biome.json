@@ -13,7 +13,7 @@
       "src/**/*.jsx",
       "src/**/*.json"
     ],
-    "ignore": ["node_modules", "dist"]
+    "ignore": ["node_modules", "dist", ".next"]
   },
   "formatter": {
     "enabled": true,
