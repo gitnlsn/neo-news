@@ -3,13 +3,35 @@ import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { env } from "~/env";
 import type { R2UploadResponse } from "~/schemas/api/R2UploadResponse";
+import { auth } from "~/server/auth";
 import { upload } from "~/use-cases/upload";
-import { parseFile } from "~/utils/router/parseFile";
+import { parseFile } from "~/utils/api/parseFile";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<R2UploadResponse>,
 ) {
+  /**
+   * Validate that the user is logged in.
+   */
+  const session = await auth();
+  const user = session?.user;
+  if (!user) {
+    return res.status(401).send({
+      message:
+        "Você precisa estar autenticado para fazer upload de imagens para um evento.",
+    });
+  }
+
+  /**
+   * Validate that the request method is POST.
+   */
+  if (req.method !== "POST") {
+    return res
+      .status(405)
+      .json({ message: `Método '${req.method}' não autorizado.` });
+  }
+
   const file = await parseFile(req);
 
   const s3Client = new S3Client({
@@ -32,7 +54,7 @@ export default async function handler(
 
     return res
       .status(200)
-      .json({ imageId: image.id, message: "Uploaded file with success." });
+      .json({ image, message: "Uploaded file with success." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Failed to upload file." });

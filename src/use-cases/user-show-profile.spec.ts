@@ -9,14 +9,6 @@ describe("User Show Profile", () => {
   const prisma = new PrismaClient();
   const fakeFactory = new FakeFactory(prisma);
 
-  beforeAll(async () => {
-    await fakeFactory.cleanDatabase();
-  });
-
-  afterEach(async () => {
-    await fakeFactory.cleanDatabase();
-  });
-
   it("should show profile", async () => {
     const userShowProfile = new UserShowProfileUseCase(prisma);
     // Tests here
@@ -26,6 +18,7 @@ describe("User Show Profile", () => {
 
     const result = await userShowProfile.execute({
       userId: user.id,
+      profileId: profile.id,
     });
 
     expect(result).toEqual(profile);

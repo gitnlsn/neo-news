@@ -3,13 +3,17 @@ import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
+import type { File as UploadedFile } from "@prisma/client";
+import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
+
 const inputSchema = z.object({
   userId: z.string().cuid(),
+  profileId: z.string().cuid().optional(),
 
   title: z.string().min(1),
   description: z.string().min(1),
   logoId: z.string().uuid().optional(),
-  images: z.array(z.string().uuid()).optional(),
+  images: z.array(z.custom<UploadedFile>()).optional(),
 });
 
 export type UserUpsertProfileInput = z.infer<typeof inputSchema>;
@@ -34,31 +38,65 @@ export class UserUpsertProfileUseCase {
     return this.input;
   }
 
+  private filterUsedImages(props: {
+    description: string;
+    uploadedImages: UploadedFile[];
+  }) {
+    const { description, uploadedImages } = props;
+
+    const urls = getUrlsFromHtml(description);
+    return uploadedImages.filter((image) => urls.includes(image.url));
+  }
+
   async execute(input: UserUpsertProfileInput) {
     const validatedInput = this.validateInput(input);
     // Logic here
 
-    const { userId, title, description, logoId, images } = validatedInput;
+    const { userId, title, description, logoId, images, profileId } =
+      validatedInput;
 
-    const profile = await this.database.profile.upsert({
+    const existingProfile = await this.database.profile.findFirst({
       where: {
-        userId,
+        id: profileId,
       },
-      update: {
-        title,
-        description,
-        logoId,
-        images: {
-          connect: images?.map((imageId) => ({ id: imageId })),
+    });
+
+    if (existingProfile) {
+      return await this.database.profile.update({
+        where: { id: existingProfile.id },
+        data: {
+          title,
+          description,
+          logo: {
+            connect: logoId ? { id: logoId } : undefined,
+          },
+          images: {
+            connect: images
+              ? this.filterUsedImages({
+                  description,
+                  uploadedImages: images,
+                }).map((image) => ({ id: image.id }))
+              : undefined,
+          },
         },
-      },
-      create: {
+      });
+    }
+
+    const profile = await this.database.profile.create({
+      data: {
         userId,
         title,
         description,
-        logoId,
+        logo: {
+          connect: logoId ? { id: logoId } : undefined,
+        },
         images: {
-          connect: images?.map((imageId) => ({ id: imageId })),
+          connect: images
+            ? this.filterUsedImages({
+                description,
+                uploadedImages: images,
+              }).map((image) => ({ id: image.id }))
+            : undefined,
         },
       },
     });

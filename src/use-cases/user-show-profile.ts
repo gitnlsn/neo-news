@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 
 const inputSchema = z.object({
   userId: z.string().cuid(),
+  profileId: z.string().cuid(),
 });
 
 export type UserShowProfileInput = z.infer<typeof inputSchema>;
@@ -36,6 +37,7 @@ export class UserShowProfileUseCase {
     const profile = await this.database.profile.findUnique({
       where: {
         userId: validatedInput.userId,
+        id: validatedInput.profileId,
       },
       include: {
         logo: true,

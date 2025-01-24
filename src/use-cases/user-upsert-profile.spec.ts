@@ -8,14 +8,6 @@ describe("User Upsert Profile", () => {
   const prisma = new PrismaClient();
   const fakeFactory = new FakeFactory(prisma);
 
-  beforeAll(async () => {
-    await fakeFactory.cleanDatabase();
-  });
-
-  afterEach(async () => {
-    await fakeFactory.cleanDatabase();
-  });
-
   it("should create user profile", async () => {
     const userUpsertProfile = new UserUpsertProfileUseCase(prisma);
     // Tests here
@@ -41,15 +33,14 @@ describe("User Upsert Profile", () => {
     const user = await fakeFactory.createUser();
     const profile = await fakeFactory.createProfile(user.id);
 
-    const input = {
+    const updatedProfile = await userUpsertProfile.execute({
       userId: user.id,
+      profileId: profile.id,
       title: "new title",
       description: "new description",
-    };
+    });
 
-    const updatedProfile = await userUpsertProfile.execute(input);
-
-    expect(updatedProfile?.title).toEqual(input.title);
-    expect(updatedProfile?.description).toEqual(input.description);
+    expect(updatedProfile?.title).toEqual("new title");
+    expect(updatedProfile?.description).toEqual("new description");
   });
 });

@@ -1,9 +1,9 @@
 import { createReadStream } from "node:fs";
 import { PutObjectCommand, type S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
+import { createId } from "@paralleldrive/cuid2";
 import type { PrismaClient } from "@prisma/client";
 import type formidable from "formidable";
-import { v4 } from "uuid";
 import { env } from "~/env";
 
 interface uploadProps {
@@ -14,7 +14,7 @@ interface uploadProps {
 }
 
 export const upload = async ({ file, prisma, s3Client }: uploadProps) => {
-  const fileId = v4();
+  const fileId = createId();
 
   const fileStream = createReadStream(file.filepath);
 
@@ -29,7 +29,15 @@ export const upload = async ({ file, prisma, s3Client }: uploadProps) => {
 
   await upload.done();
 
-  return await prisma.image.create({
-    data: { id: fileId },
+  return await prisma.file.create({
+    data: {
+      id: fileId,
+      storageProvider: "r2-cloudflare",
+      originalName: file.originalFilename ?? "",
+      generatedName: fileId,
+      sizeInBytes: file.size,
+      mimeType: file.mimetype ?? "",
+      url: `${env.CLOUDFLARE_R2_PUBLIC_PATH}/${fileId}`,
+    },
   });
 };

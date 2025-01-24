@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
+import { useRouter } from "next/router";
 import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PrivateLayout } from "~/components/private-layout";
@@ -27,20 +28,35 @@ import { profileSchema } from "~/schemas/form-validation/profile";
 import { api } from "~/trpc/react";
 
 export default function ProfileForm() {
+  const router = useRouter();
+  const profileId = router.query.profileId as string;
+
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      logo: undefined,
+      images: [],
+    },
   });
 
   const upsertProfileMutation = api.profile.upsertProfile.useMutation();
-  const showProfile = api.profile.showProfile.useQuery();
+  const showProfile = api.profile.showProfile.useQuery(
+    { profileId },
+    { enabled: !!profileId },
+  );
 
   useEffect(() => {
     if (showProfile.data) {
-      form.setValue("title", showProfile.data.title);
-      form.setValue("description", showProfile.data.description);
-      form.setValue("logoId", showProfile.data.logoId ?? undefined);
+      form.reset({
+        title: showProfile.data.title,
+        description: showProfile.data.description,
+        images: showProfile.data.images,
+        logo: showProfile.data.logo ?? undefined,
+      });
     }
   }, [showProfile.data, form]);
 

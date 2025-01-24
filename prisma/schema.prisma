@@ -53,9 +53,7 @@ model User {
     accounts Account[]
     sessions Session[]
 
-    Post Post[]
-
-    profile Profile?
+    profiles Profile[]
 }
 
 model VerificationToken {
@@ -72,16 +70,16 @@ model Profile {
     title       String
     description String @db.Text
 
-    logo   Image?  @relation(name: "logo", fields: [logoId], references: [id])
-    logoId String? @unique
-
-    images Image[] @relation("profileImages")
+    logo File? @relation("logo")
+    images File[] @relation("profileImages")
 
     user   User   @relation(fields: [userId], references: [id])
-    userId String @unique
+    userId String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    posts Post[]
 }
 
 model Post {
@@ -90,25 +88,35 @@ model Post {
     title   String
     content String @db.Text
 
-    images Image[]
+    images File[]
+
+    profile   Profile @relation(fields: [profileId], references: [id])
+    profileId String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-
-    author   User   @relation(fields: [authorId], references: [id])
-    authorId String
 }
 
-model Image {
-    id String @id @default(uuid())
+model File {
+    id String @id @default(cuid())
 
-    description String?
+    storageProvider String
+
+    originalName    String
+    generatedName   String
+    sizeInBytes     Int
+    mimeType        String
+    url             String
+    alternativeText String?
+
+    createdAt DateTime @default(now())
 
     post   Post?   @relation(fields: [postId], references: [id])
     postId String?
 
-    profileFromLogo Profile? @relation(name: "logo")
+    profileFromLogo   Profile? @relation(name: "logo", fields: [profileFromLogoId], references: [id])
+    profileFromLogoId String? @unique
 
-    profileFromImage Profile? @relation(name: "profileImages", fields: [profileId], references: [id])
-    profileId        String?
+    profileFromImage   Profile? @relation(name: "profileImages", fields: [profileFromImageId], references: [id])
+    profileFromImageId String?
 }

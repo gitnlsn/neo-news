@@ -1,6 +1,12 @@
 import { defineConfig, defineProject } from "vitest/config";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "~/": new URL("./src/", import.meta.url).pathname,
+    },
+  },
+
   test: {
     environment: "node",
     
@@ -10,11 +16,6 @@ export default defineConfig({
     //   reportsDirectory: './coverage',
     // },
 
-    poolOptions: {
-      threads: {
-        singleThread: true,
-        maxThreads: 1,
-      }
-    },
+
   },
 });

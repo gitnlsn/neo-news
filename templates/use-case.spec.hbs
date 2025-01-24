@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import { {{ properCase name }}UseCase } from './{{ kebabCase name }}';
 
@@ -8,14 +8,6 @@ import { PrismaClient } from '@prisma/client';
 describe('{{ titleCase name }}', () => {
   const prisma = new PrismaClient();
   const fakeFactory = new FakeFactory(prisma);
-
-  beforeAll(async () => {
-    await fakeFactory.cleanDatabase();
-  });
-
-  afterEach(async () => {
-    await fakeFactory.cleanDatabase();
-  });
 
   it('should ...', async () => {
     const {{ camelCase name }} = new {{ properCase name }}UseCase(prisma);

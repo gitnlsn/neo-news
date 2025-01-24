@@ -5,7 +5,7 @@ export const parseFile = (req: NextApiRequest) => {
   return new Promise<formidable.File>((resolve, reject) => {
     const form = formidable({
       allowEmptyFiles: false,
-      maxFieldsSize: 1 * 1024 * 1024, // 3 MBs
+      maxFieldsSize: 1 * 1024 * 1024, // 1 MB
       multiples: false,
       keepExtensions: true,
     });
