@@ -6,7 +6,7 @@ export const PrivateLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
-      <main className="w-full">
+      <main className="w-full mb-10">
         <Container>{children}</Container>
       </main>
     </SidebarProvider>

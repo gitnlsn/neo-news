@@ -12,7 +12,7 @@ const inputSchema = z.object({
 
   title: z.string().min(1),
   description: z.string().min(1),
-  logoId: z.string().uuid().optional(),
+  logo: z.custom<UploadedFile>().optional(),
   images: z.array(z.custom<UploadedFile>()).optional(),
 });
 
@@ -52,7 +52,7 @@ export class UserUpsertProfileUseCase {
     const validatedInput = this.validateInput(input);
     // Logic here
 
-    const { userId, title, description, logoId, images, profileId } =
+    const { userId, title, description, logo, images, profileId } =
       validatedInput;
 
     const existingProfile = await this.database.profile.findFirst({
@@ -68,7 +68,7 @@ export class UserUpsertProfileUseCase {
           title,
           description,
           logo: {
-            connect: logoId ? { id: logoId } : undefined,
+            connect: logo ? { id: logo.id } : undefined,
           },
           images: {
             connect: images
@@ -79,6 +79,11 @@ export class UserUpsertProfileUseCase {
               : undefined,
           },
         },
+
+        include: {
+          logo: true,
+          images: true,
+        },
       });
     }
 
@@ -88,7 +93,7 @@ export class UserUpsertProfileUseCase {
         title,
         description,
         logo: {
-          connect: logoId ? { id: logoId } : undefined,
+          connect: logo ? { id: logo.id } : undefined,
         },
         images: {
           connect: images
@@ -98,6 +103,11 @@ export class UserUpsertProfileUseCase {
               }).map((image) => ({ id: image.id }))
             : undefined,
         },
+      },
+
+      include: {
+        logo: true,
+        images: true,
       },
     });
 

@@ -6,6 +6,7 @@ export const parseFile = (req: NextApiRequest) => {
     const form = formidable({
       allowEmptyFiles: false,
       maxFieldsSize: 1 * 1024 * 1024, // 1 MB
+      maxTotalFileSize: 1 * 1024 * 1024, // 1 MB
       multiples: false,
       keepExtensions: true,
     });

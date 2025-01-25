@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { uploadEventRichTextImage } from "~/utils/api/upload-event-rich-text-image";
+import { uploadImage } from "~/utils/api/upload-image";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -77,7 +77,7 @@ export const RichTextAddImageButton = ({
     if (type === "upload" && file) {
       try {
         setLoading(true);
-        const uploadedFile = await uploadEventRichTextImage(file);
+        const uploadedFile = await uploadImage(file);
         onUploadImage?.(uploadedFile);
         editor.chain().focus().setImage({ src: uploadedFile.url }).run();
       } catch (error) {
@@ -93,7 +93,7 @@ export const RichTextAddImageButton = ({
     onOpen?.(false);
   };
 
-  const uploadImage = form.watch("file");
+  const uploadedImage = form.watch("file");
 
   return (
     <Dialog
@@ -204,11 +204,11 @@ export const RichTextAddImageButton = ({
               />
             )}
 
-            {form.watch("type") === "upload" && uploadImage && (
+            {form.watch("type") === "upload" && uploadedImage && (
               <div className="col-span-3 flex flex-col items-center justify-center">
                 <FormItem className="relative mx-auto">
                   <Image
-                    src={URL.createObjectURL(uploadImage)}
+                    src={URL.createObjectURL(uploadedImage)}
                     alt="Event cover"
                     width={500}
                     height={500}

@@ -1,13 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import { useRouter } from "next/router";
-import { use, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { PrivateLayout } from "~/components/private-layout";
+import {
+  RichTextEditor,
+  type RichTextEditorRef,
+} from "~/components/rich-text/editor";
 import { Button } from "~/components/ui/button"; // Importar Button da pasta ui
 import {
   Form,
@@ -22,16 +26,15 @@ import {
 import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
 import PageHeader from "~/components/ui/page-header";
 import { SidebarTrigger } from "~/components/ui/sidebar";
-import { Textarea } from "~/components/ui/textarea";
 import { Typography } from "~/components/ui/typography";
 import { profileSchema } from "~/schemas/form-validation/profile";
 import { api } from "~/trpc/react";
+import { uploadImage } from "~/utils/api/upload-image";
 
 export default function ProfileForm() {
-  const router = useRouter();
-  const profileId = router.query.profileId as string;
+  const { profileId } = useParams<{ profileId: string }>();
 
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const richTextEditorRef = useRef<RichTextEditorRef>(null);
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -41,6 +44,11 @@ export default function ProfileForm() {
       logo: undefined,
       images: [],
     },
+  });
+
+  const richTextFieldArray = useFieldArray({
+    control: form.control,
+    name: "images",
   });
 
   const upsertProfileMutation = api.profile.upsertProfile.useMutation();
@@ -57,6 +65,9 @@ export default function ProfileForm() {
         images: showProfile.data.images,
         logo: showProfile.data.logo ?? undefined,
       });
+
+      console.log("set rich text editor content", showProfile.data.description);
+      richTextEditorRef.current?.setContent(showProfile.data.description);
     }
   }, [showProfile.data, form]);
 
@@ -69,34 +80,56 @@ export default function ProfileForm() {
     }
   };
 
-  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+
+    if (!file) return;
+
+    const uploadedFile = await uploadImage(file);
+
+    form.setValue("logo", uploadedFile);
   };
-
-  const breadcrumbItems = [
-    { title: "Home", link: "/" },
-    { title: "Profile", link: "/dashboard/profile" },
-  ];
-
-  console.log(form.watch(), form.formState.errors);
 
   return (
     <PrivateLayout>
       <div className="py-4 flex flex-row gap-4 items-center">
         <SidebarTrigger />
-        <PageHeader breadcrumbItems={breadcrumbItems} />
+        <PageHeader
+          breadcrumbItems={[
+            { title: "Home", link: "/" },
+            { title: "Profile", link: "/dashboard/profile" },
+          ]}
+        />
       </div>
 
       <Form {...form}>
         <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
           <Typography.H3 className="col-span-12">Profile</Typography.H3>
+
+          <FormField
+            control={form.control}
+            name="logo"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-12">
+                <FormLabel>Logo</FormLabel>
+                <FormControl>
+                  <Input type="file" onChange={handleLogoChange} />
+                </FormControl>
+                {field.value && (
+                  <img
+                    src={field.value.url}
+                    alt="Logo Preview"
+                    className="mt-2 max-h-[600px] max-w-[600px] w-full mx-auto"
+                  />
+                )}
+                <FormDescription>
+                  Esse será o logo do seu perfil.
+                </FormDescription>
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
@@ -126,10 +159,10 @@ export default function ProfileForm() {
               <FormItem className="sm:col-span-12">
                 <FormLabel>Descrição</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Insira a descrição"
-                    value={field.value ?? ""}
+                  <RichTextEditor
+                    ref={richTextEditorRef}
                     onChange={field.onChange}
+                    onUploadImage={(file) => richTextFieldArray.append(file)}
                   />
                 </FormControl>
                 <FormDescription>
@@ -139,17 +172,6 @@ export default function ProfileForm() {
               </FormItem>
             )}
           />
-
-          {/* <FormItem>
-            <FormLabel>Logo</FormLabel>
-            <FormControl>
-              <Input type="file" onChange={handleLogoChange} />
-            </FormControl>
-            {logoPreview && (
-              <img src={logoPreview} alt="Logo Preview" className="mt-2" />
-            )}
-            <FormDescription>Esse será o logo do seu perfil.</FormDescription>
-          </FormItem> */}
 
           <Button
             type="submit"
