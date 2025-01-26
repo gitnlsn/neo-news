@@ -27,7 +27,6 @@ import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
 import PageHeader from "~/components/ui/page-header";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
-import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 import { profileSchema } from "~/schemas/form-validation/profile";
 import { api } from "~/trpc/react";
 import { uploadImage } from "~/utils/api/upload-image";
@@ -37,13 +36,6 @@ export default function ProfileForm() {
   const { profileId } = useParams<{ profileId: string }>();
 
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
-
-  const { breadcrumbItems, setBreadcrumbItems } = useBreadcrumb({
-    initialItems: [
-      { title: "Dashboard", link: "/dashboard" },
-      { title: "Profile", link: "/dashboard/profile" },
-    ],
-  });
 
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -67,6 +59,20 @@ export default function ProfileForm() {
     { enabled: !!profileId },
   );
 
+  const breadcrumbItems = showProfile.data
+    ? [
+        { title: "Dashboard", link: "/dashboard" },
+        { title: "Perfil", link: "/dashboard/profile" },
+        {
+          title: showProfile.data.title,
+          link: `/dashboard/profile/${showProfile.data.id}`,
+        },
+      ]
+    : [
+        { title: "Dashboard", link: "/dashboard" },
+        { title: "Perfil", link: "/dashboard/profile" },
+      ];
+
   useEffect(() => {
     if (showProfile.data) {
       form.reset({
@@ -79,16 +85,8 @@ export default function ProfileForm() {
       });
 
       richTextEditorRef.current?.setContent(showProfile.data.description);
-
-      const { title, id } = showProfile.data;
-      if (title) {
-        setBreadcrumbItems((current) => [
-          ...current,
-          { title, link: `/dashboard/profile/${id}` },
-        ]);
-      }
     }
-  }, [showProfile.data, form, setBreadcrumbItems]);
+  }, [showProfile.data, form]);
 
   const onSubmit = async (data: z.infer<typeof profileSchema>) => {
     try {

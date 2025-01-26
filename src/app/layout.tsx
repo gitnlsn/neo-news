@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 
+import { SessionProvider } from "next-auth/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import { Toaster } from "~/components/ui/sonner";
@@ -29,14 +30,16 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
         <Suspense fallback={<div>Loading...</div>}>
-          <TRPCReactProvider>
-            <NuqsAdapter>
-              <>
-                {children}
-                <Toaster />
-              </>
-            </NuqsAdapter>
-          </TRPCReactProvider>
+          <SessionProvider>
+            <TRPCReactProvider>
+              <NuqsAdapter>
+                <>
+                  {children}
+                  <Toaster />
+                </>
+              </NuqsAdapter>
+            </TRPCReactProvider>
+          </SessionProvider>
         </Suspense>
       </body>
     </html>

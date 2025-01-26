@@ -34,7 +34,6 @@ import {
 } from "~/components/ui/select";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
-import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 import { postSchema } from "~/schemas/form-validation/post";
 import { api } from "~/trpc/react";
 
@@ -43,13 +42,6 @@ export default function ProfileForm() {
   const { postId } = useParams<{ postId: string }>();
 
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
-
-  const { breadcrumbItems, setBreadcrumbItems } = useBreadcrumb({
-    initialItems: [
-      { title: "Dashboard", link: "/dashboard" },
-      { title: "Post", link: "/dashboard/post" },
-    ],
-  });
 
   const form = useForm<z.infer<typeof postSchema>>({
     resolver: zodResolver(postSchema),
@@ -71,6 +63,20 @@ export default function ProfileForm() {
 
   const listProfiles = api.profile.paginate.useQuery({});
 
+  const breadcrumbItems = showPost.data
+    ? [
+        { title: "Dashboard", link: "/dashboard" },
+        { title: "Post", link: "/dashboard/post" },
+        {
+          title: showPost.data.title,
+          link: `/dashboard/post/${showPost.data.id}`,
+        },
+      ]
+    : [
+        { title: "Dashboard", link: "/dashboard" },
+        { title: "Post", link: "/dashboard/post" },
+      ];
+
   useEffect(() => {
     if (showPost.data) {
       form.reset({
@@ -83,16 +89,8 @@ export default function ProfileForm() {
       });
 
       richTextEditorRef.current?.setContent(showPost.data.content);
-
-      const { title, id } = showPost.data;
-      if (title) {
-        setBreadcrumbItems((current) => [
-          ...current,
-          { title, link: `/dashboard/post/${id}` },
-        ]);
-      }
     }
-  }, [showPost.data, form, setBreadcrumbItems]);
+  }, [showPost.data, form]);
 
   const onSubmit = async (data: z.infer<typeof postSchema>) => {
     try {

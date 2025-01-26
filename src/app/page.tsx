@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Container } from "~/components/ui/container";
-import { auth } from "~/server/auth";
+import { auth, signIn } from "~/server/auth";
 
 export default async function Home() {
   const session = await auth();
