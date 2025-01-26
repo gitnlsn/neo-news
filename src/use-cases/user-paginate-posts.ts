@@ -7,12 +7,14 @@ import { buildPaginationTakeSkip } from "~/utils/api/build-pagination-take-skip"
 
 const inputSchema = paginateSchema.extend({
   userId: z.string().cuid(),
+
+  profileId: z.string().cuid().optional(),
 });
 
-export type UserPaginateProfilesInput = z.infer<typeof inputSchema>;
+export type UserPaginatePostsInput = z.infer<typeof inputSchema>;
 
-export class UserPaginateProfilesUseCase {
-  private input: UserPaginateProfilesInput | null = null;
+export class UserPaginatePostsUseCase {
+  private input: UserPaginatePostsInput | null = null;
 
   constructor(private readonly database: PrismaClient) {}
 
@@ -31,36 +33,38 @@ export class UserPaginateProfilesUseCase {
     return this.input;
   }
 
-  async execute(input: UserPaginateProfilesInput) {
+  async execute(input: UserPaginatePostsInput) {
     const validatedInput = this.validateInput(input);
     // Logic here
 
-    const { page, perPage, search } = validatedInput;
+    const { page, perPage, search, profileId } = validatedInput;
 
-    const where: Prisma.ProfileWhereInput = {
-      userId: validatedInput.userId,
+    const where: Prisma.PostWhereInput = {
+      profile: profileId
+        ? { id: profileId }
+        : {
+            userId: validatedInput.userId,
+          },
     };
 
     if (search) {
       where.OR = [
         { title: { contains: search } },
-        { description: { contains: search } },
+        { content: { contains: search } },
       ];
     }
 
-    const [profiles, total] = await Promise.all([
-      this.database.profile.findMany({
+    const [posts, total] = await Promise.all([
+      this.database.post.findMany({
         where,
 
         ...buildPaginationTakeSkip({ page, perPage }),
       }),
-      this.database.profile.count({
-        where,
-      }),
+      this.database.post.count({ where }),
     ]);
 
     return {
-      profiles,
+      posts,
       total,
     };
   }

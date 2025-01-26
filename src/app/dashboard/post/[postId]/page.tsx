@@ -2,10 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
-import type { z } from "zod";
+import { set, type z } from "zod";
 
 import { useParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PrivateLayout } from "~/components/private-layout";
 import {
@@ -24,33 +24,38 @@ import {
   FormWrapper,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
-import PageHeader from "~/components/ui/page-header";
+import PageHeader, { NavigationItem } from "~/components/ui/page-header";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
-import { profileSchema } from "~/schemas/form-validation/profile";
+import { postSchema } from "~/schemas/form-validation/post";
 import { api } from "~/trpc/react";
-import { uploadImage } from "~/utils/api/upload-image";
 import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 
 export default function ProfileForm() {
-  const { profileId } = useParams<{ profileId: string }>();
+  const { postId } = useParams<{ postId: string }>();
 
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
 
   const { breadcrumbItems, setBreadcrumbItems } = useBreadcrumb({
     initialItems: [
       { title: "Dashboard", link: "/dashboard" },
-      { title: "Profile", link: "/dashboard/profile" },
+      { title: "Post", link: "/dashboard/post" },
     ],
   });
 
-  const form = useForm<z.infer<typeof profileSchema>>({
-    resolver: zodResolver(profileSchema),
+  const form = useForm<z.infer<typeof postSchema>>({
+    resolver: zodResolver(postSchema),
     defaultValues: {
-      profileId,
+      postId,
       title: "",
-      description: "",
-      logo: undefined,
+      content: "",
       images: [],
     },
   });
@@ -60,62 +65,49 @@ export default function ProfileForm() {
     name: "images",
   });
 
-  const upsertProfileMutation = api.profile.upsert.useMutation();
-  const showProfile = api.profile.show.useQuery(
-    { profileId },
-    { enabled: !!profileId },
-  );
+  const upsertProfileMutation = api.post.upsert.useMutation();
+  const showPost = api.post.show.useQuery({ postId }, { enabled: !!postId });
+
+  const listProfiles = api.profile.paginate.useQuery({});
 
   useEffect(() => {
-    if (showProfile.data) {
+    if (showPost.data) {
       form.reset({
-        profileId: showProfile.data.id,
+        postId: showPost.data.id,
 
-        title: showProfile.data.title,
-        description: showProfile.data.description,
-        images: showProfile.data.images,
-        logo: showProfile.data.logo ?? undefined,
+        profileId: showPost.data.profileId,
+        title: showPost.data.title,
+        content: showPost.data.content,
+        images: showPost.data.images,
       });
 
-      richTextEditorRef.current?.setContent(showProfile.data.description);
+      richTextEditorRef.current?.setContent(showPost.data.content);
 
-      const { title, id } = showProfile.data;
+      const { title, id } = showPost.data;
       if (title) {
         setBreadcrumbItems((current) => [
           ...current,
-          { title, link: `/dashboard/profile/${id}` },
+          { title, link: `/dashboard/post/${id}` },
         ]);
       }
     }
-  }, [showProfile.data, form, setBreadcrumbItems]);
+  }, [showPost.data, form, setBreadcrumbItems]);
 
-  const onSubmit = async (data: z.infer<typeof profileSchema>) => {
+  const onSubmit = async (data: z.infer<typeof postSchema>) => {
     try {
       await upsertProfileMutation.mutateAsync(data);
       toast.success(
-        profileId === undefined
-          ? "Perfil criado com sucesso"
-          : "Perfil atualizado com sucesso",
+        postId === undefined
+          ? "Post criado com sucesso"
+          : "Post atualizado com sucesso",
       );
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("Erro ao atualizar perfil");
+        toast.error("Erro ao criar post");
       }
     }
-  };
-
-  const handleLogoChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    const uploadedFile = await uploadImage(file);
-
-    form.setValue("logo", uploadedFile);
   };
 
   return (
@@ -127,27 +119,32 @@ export default function ProfileForm() {
 
       <Form {...form}>
         <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
-          <Typography.H3 className="col-span-12">Perfil</Typography.H3>
+          <Typography.H3 className="col-span-12">Post</Typography.H3>
 
           <FormField
             control={form.control}
-            name="logo"
+            name="profileId"
             render={({ field }) => (
               <FormItem className="sm:col-span-12">
-                <FormLabel>Logo</FormLabel>
-                <FormControl>
-                  <Input type="file" onChange={handleLogoChange} />
-                </FormControl>
-                {field.value && (
-                  <img
-                    src={field.value.url}
-                    alt="Logo Preview"
-                    className="mt-2 max-h-[600px] max-w-[600px] w-full mx-auto"
-                  />
-                )}
+                <FormLabel>Perfil</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um perfil" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {listProfiles.data?.profiles.map((profile) => (
+                      <SelectItem key={profile.id} value={profile.id}>
+                        {profile.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormDescription>
-                  Esse será o logo do seu perfil.
+                  Esse será o perfil dentro do qual você publicará seu post.
                 </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -166,7 +163,7 @@ export default function ProfileForm() {
                   />
                 </FormControl>
                 <FormDescription>
-                  Esse será o título do seu perfil.
+                  Esse será o título do seu post.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -175,10 +172,10 @@ export default function ProfileForm() {
 
           <FormField
             control={form.control}
-            name="description"
+            name="content"
             render={({ field }) => (
               <FormItem className="sm:col-span-12">
-                <FormLabel>Descrição</FormLabel>
+                <FormLabel>Conteúdo</FormLabel>
                 <FormControl>
                   <RichTextEditor
                     ref={richTextEditorRef}
@@ -187,7 +184,7 @@ export default function ProfileForm() {
                   />
                 </FormControl>
                 <FormDescription>
-                  Essa será a descrição do seu perfil.
+                  Essa será o conteúdo do seu post.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -197,9 +194,9 @@ export default function ProfileForm() {
           <Button
             type="submit"
             className="col-span-12"
-            isLoading={upsertProfileMutation.isPending || showProfile.isLoading}
+            isLoading={upsertProfileMutation.isPending || showPost.isLoading}
           >
-            {profileId === undefined ? "Create Profile" : "Update Profile"}
+            {postId ? "Atualizar Post" : "Criar Post"}
           </Button>
         </FormWrapper>
       </Form>

@@ -15,8 +15,8 @@ describe("User Paginate Profiles", () => {
 
     const user = await fakeFactory.createUser();
 
-    const profile1 = await fakeFactory.createProfile(user.id);
-    const profile2 = await fakeFactory.createProfile(user.id);
+    const profile1 = await fakeFactory.createProfile({ userId: user.id });
+    const profile2 = await fakeFactory.createProfile({ userId: user.id });
 
     const { profiles, total } = await userPaginateProfiles.execute({
       userId: user.id,
@@ -35,8 +35,8 @@ describe("User Paginate Profiles", () => {
 
     const user = await fakeFactory.createUser();
 
-    const profile1 = await fakeFactory.createProfile(user.id);
-    const profile2 = await fakeFactory.createProfile(user.id);
+    const profile1 = await fakeFactory.createProfile({ userId: user.id });
+    const profile2 = await fakeFactory.createProfile({ userId: user.id });
 
     const { profiles, total } = await userPaginateProfiles.execute({
       userId: user.id,
@@ -57,8 +57,14 @@ describe("User Paginate Profiles", () => {
 
     const user = await fakeFactory.createUser();
 
-    const profile1 = await fakeFactory.createProfile(user.id, { title: "t1" });
-    const profile2 = await fakeFactory.createProfile(user.id, { title: "t2" });
+    const profile1 = await fakeFactory.createProfile({
+      userId: user.id,
+      title: "t1",
+    });
+    const profile2 = await fakeFactory.createProfile({
+      userId: user.id,
+      title: "t2",
+    });
 
     const { profiles, total } = await userPaginateProfiles.execute({
       userId: user.id,
@@ -78,10 +84,12 @@ describe("User Paginate Profiles", () => {
 
     const user = await fakeFactory.createUser();
 
-    const profile1 = await fakeFactory.createProfile(user.id, {
+    const profile1 = await fakeFactory.createProfile({
+      userId: user.id,
       description: "t1",
     });
-    const profile2 = await fakeFactory.createProfile(user.id, {
+    const profile2 = await fakeFactory.createProfile({
+      userId: user.id,
       description: "t2",
     });
 

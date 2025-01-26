@@ -31,7 +31,7 @@ describe("User Upsert Profile", () => {
     // Tests here
 
     const user = await fakeFactory.createUser();
-    const profile = await fakeFactory.createProfile(user.id);
+    const profile = await fakeFactory.createProfile({ userId: user.id });
 
     const updatedProfile = await userUpsertProfile.execute({
       userId: user.id,

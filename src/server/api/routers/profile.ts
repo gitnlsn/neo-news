@@ -4,7 +4,7 @@ import { UserUpsertProfileUseCase } from "~/use-cases/user-upsert-profile";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const profileRouter = createTRPCRouter({
-  paginateProfiles: protectedProcedure
+  paginate: protectedProcedure
     .input(UserPaginateProfilesUseCase.inputSchema.omit({ userId: true }))
     .query(async ({ input, ctx }) => {
       return await new UserPaginateProfilesUseCase(ctx.db).execute({
@@ -13,7 +13,7 @@ export const profileRouter = createTRPCRouter({
       });
     }),
 
-  showProfile: protectedProcedure
+  show: protectedProcedure
     .input(UserShowProfileUseCase.inputSchema.omit({ userId: true }))
     .query(async ({ input, ctx }) => {
       return await new UserShowProfileUseCase(ctx.db).execute({
@@ -22,7 +22,7 @@ export const profileRouter = createTRPCRouter({
       });
     }),
 
-  upsertProfile: protectedProcedure
+  upsert: protectedProcedure
     .input(UserUpsertProfileUseCase.inputSchema.omit({ userId: true }))
     .mutation(async ({ input, ctx }) => {
       return await new UserUpsertProfileUseCase(ctx.db).execute({

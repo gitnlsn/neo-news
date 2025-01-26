@@ -14,7 +14,7 @@ describe("User Show Profile", () => {
     // Tests here
 
     const user = await fakeFactory.createUser();
-    const profile = await fakeFactory.createProfile(user.id);
+    const profile = await fakeFactory.createProfile({ userId: user.id });
 
     const result = await userShowProfile.execute({
       userId: user.id,

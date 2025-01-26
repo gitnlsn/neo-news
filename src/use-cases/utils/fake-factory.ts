@@ -12,15 +12,15 @@ export class FakeFactory {
   }
 
   async createProfile(
-    userId: string,
-    data?: Partial<Prisma.ProfileCreateInput> & {
+    data: Partial<Prisma.ProfileCreateInput> & {
+      userId: string;
       logoId?: string;
       images?: string[];
     },
   ) {
     return this.prisma.profile.create({
       data: {
-        userId,
+        userId: data.userId,
         title: data?.title ?? faker.lorem.sentence(),
         description: data?.description ?? faker.lorem.paragraph(),
         logo: {
@@ -47,6 +47,28 @@ export class FakeFactory {
         mimeType: data?.mimeType ?? "",
         url: `https://fake.com/${randomUUID()}`,
         storageProvider: data?.storageProvider ?? "fake",
+      },
+    });
+  }
+
+  async createPost(
+    data: Partial<Omit<Prisma.PostCreateInput, "images">> & {
+      profileId: string;
+      imageIds?: string[];
+    },
+  ) {
+    return this.prisma.post.create({
+      data: {
+        title: data?.title ?? faker.lorem.sentence(),
+        content: data?.content ?? faker.lorem.paragraph(),
+        images: {
+          connect: data?.imageIds?.map((imageId) => ({ id: imageId })),
+        },
+        profileId: data?.profileId ?? "",
+      },
+
+      include: {
+        images: true,
       },
     });
   }

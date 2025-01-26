@@ -70,7 +70,7 @@ model Profile {
     title       String
     description String @db.Text
 
-    logo File? @relation("logo")
+    logo   File?  @relation("logo")
     images File[] @relation("profileImages")
 
     user   User   @relation(fields: [userId], references: [id])
@@ -89,6 +89,8 @@ model Post {
     content String @db.Text
 
     images File[]
+
+    isPublished Boolean @default(false)
 
     profile   Profile @relation(fields: [profileId], references: [id])
     profileId String
@@ -115,7 +117,7 @@ model File {
     postId String?
 
     profileFromLogo   Profile? @relation(name: "logo", fields: [profileFromLogoId], references: [id])
-    profileFromLogoId String? @unique
+    profileFromLogoId String?  @unique
 
     profileFromImage   Profile? @relation(name: "profileImages", fields: [profileFromImageId], references: [id])
     profileFromImageId String?

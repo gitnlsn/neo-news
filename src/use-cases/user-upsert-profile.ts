@@ -10,8 +10,8 @@ const inputSchema = z.object({
   userId: z.string().cuid(),
   profileId: z.string().cuid().optional(),
 
-  title: z.string().min(1),
-  description: z.string().min(1),
+  title: z.string().min(1, "Título é obrigatório"),
+  description: z.string().min(1, "Descrição é obrigatória"),
   logo: z.custom<UploadedFile>().optional(),
   images: z.array(z.custom<UploadedFile>()).optional(),
 });
@@ -55,16 +55,10 @@ export class UserUpsertProfileUseCase {
     const { userId, title, description, logo, images, profileId } =
       validatedInput;
 
-    const existingProfile = await this.database.profile.findFirst({
-      where: {
-        id: profileId,
-      },
-    });
-
-    if (existingProfile) {
-      return await this.database.profile.update({
-        where: { id: existingProfile.id },
+    if (!profileId) {
+      return await this.database.profile.create({
         data: {
+          userId,
           title,
           description,
           logo: {
@@ -87,9 +81,23 @@ export class UserUpsertProfileUseCase {
       });
     }
 
-    const profile = await this.database.profile.create({
-      data: {
+    const existingProfile = await this.database.profile.findFirst({
+      where: {
+        id: profileId,
         userId,
+      },
+    });
+
+    if (!existingProfile) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Perfil não encontrado",
+      });
+    }
+
+    return await this.database.profile.update({
+      where: { id: existingProfile.id },
+      data: {
         title,
         description,
         logo: {
@@ -110,7 +118,5 @@ export class UserUpsertProfileUseCase {
         images: true,
       },
     });
-
-    return profile;
   }
 }

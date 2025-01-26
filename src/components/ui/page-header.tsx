@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 
-interface NavigationItem {
+export interface NavigationItem {
   title: string;
   link: string;
 }
@@ -26,6 +26,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ breadcrumbItems }) => {
             {index < breadcrumbItems.length - 1 ? (
               <>
                 <BreadcrumbLink href={item.link}>{item.title}</BreadcrumbLink>
+                <p>{">"}</p>
               </>
             ) : (
               <BreadcrumbPage>{item.title}</BreadcrumbPage>
