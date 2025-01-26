@@ -1,7 +1,9 @@
 import {
   PaginationContent,
   PaginationEllipsis,
+  PaginationFirst,
   PaginationItem,
+  PaginationLast,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
@@ -27,22 +29,16 @@ export const Pagination = ({
     <ShadcnPagination>
       <PaginationContent>
         {currentPage > 1 && (
-          <PaginationItem>
-            <PaginationPrevious onClick={() => onPageChange(currentPage - 1)} />
-          </PaginationItem>
-        )}
-
-        {currentPage > 1 && (
           <>
             <PaginationItem>
-              <PaginationLink onClick={() => onPageChange(1)}>1</PaginationLink>
+              <PaginationFirst isActive onClick={() => onPageChange(1)} />
             </PaginationItem>
-
-            {currentPage !== 2 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
+            <PaginationItem>
+              <PaginationPrevious
+                isActive
+                onClick={() => onPageChange(currentPage - 1)}
+              />
+            </PaginationItem>
           </>
         )}
 
@@ -50,25 +46,28 @@ export const Pagination = ({
           <PaginationLink isActive={false}>{currentPage}</PaginationLink>
         </PaginationItem>
 
-        {totalPages !== currentPage && (
-          <>
-            {currentPage !== totalPages - 1 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-            <PaginationItem>
-              <PaginationLink onClick={() => onPageChange(totalPages)}>
-                {totalPages}
-              </PaginationLink>
-            </PaginationItem>
-          </>
-        )}
+        <PaginationItem>
+          <PaginationLink isActive={false}>de</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink isActive={false}>{totalPages}</PaginationLink>
+        </PaginationItem>
 
         {currentPage < totalPages && (
-          <PaginationItem>
-            <PaginationNext onClick={() => onPageChange(currentPage + 1)} />
-          </PaginationItem>
+          <>
+            <PaginationItem>
+              <PaginationNext
+                isActive
+                onClick={() => onPageChange(currentPage + 1)}
+              />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLast
+                isActive
+                onClick={() => onPageChange(totalPages)}
+              />
+            </PaginationItem>
+          </>
         )}
       </PaginationContent>
     </ShadcnPagination>

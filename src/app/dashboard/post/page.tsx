@@ -3,6 +3,7 @@
 import { MoreHorizontal, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Loading } from "~/components/molecular/loading";
 import { Pagination } from "~/components/pagination";
 import { PrivateLayout } from "~/components/private-layout";
 import { Button } from "~/components/ui/button";
@@ -28,6 +29,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -153,14 +155,27 @@ export default function PaginatePost() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
 
-      <Pagination
-        currentPage={page}
-        totalItems={postsQuery.data?.total ?? 0}
-        onPageChange={(page) => setPage(page)}
-        perPage={perPage}
-      />
+        <TableFooter>
+          {postsQuery.isLoading && (
+            <TableRow>
+              <TableCell colSpan={3}>
+                <Loading size="xl" className="mx-auto" />
+              </TableCell>
+            </TableRow>
+          )}
+          <TableRow>
+            <TableCell colSpan={3}>
+              <Pagination
+                currentPage={page}
+                totalItems={postsQuery.data?.total ?? 0}
+                onPageChange={(page) => setPage(page)}
+                perPage={perPage}
+              />
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
     </PrivateLayout>
   );
 }
