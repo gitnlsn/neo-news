@@ -62,7 +62,7 @@ export default function PaginatePost() {
       </div>
 
       <div className="flex flex-row gap-4 items-center justify-between">
-        <Typography.H3>Seus posts</Typography.H3>
+        <Typography.H3>Meus posts</Typography.H3>
         <Button size="sm" onClick={() => router.push("/dashboard/post/create")}>
           <PlusIcon />
           Novo post
