@@ -51,15 +51,12 @@ export default function PaginatePost() {
   const deletePost = api.post.delete.useMutation();
   return (
     <PrivateLayout>
-      <div className="py-4 flex flex-row gap-4 items-center">
-        <SidebarTrigger />
-        <PageHeader
-          breadcrumbItems={[
-            { title: "Dashboard", link: "/dashboard" },
-            { title: "Posts", link: "/dashboard/post" },
-          ]}
-        />
-      </div>
+      <PageHeader
+        breadcrumbItems={[
+          { title: "Dashboard", link: "/dashboard" },
+          { title: "Posts", link: "/dashboard/post" },
+        ]}
+      />
 
       <div className="flex flex-row gap-4 items-center justify-between">
         <Typography.H3>Meus posts</Typography.H3>

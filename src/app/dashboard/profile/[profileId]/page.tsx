@@ -120,10 +120,7 @@ export default function ProfileForm() {
 
   return (
     <PrivateLayout>
-      <div className="py-4 flex flex-row gap-4 items-center">
-        <SidebarTrigger />
-        <PageHeader breadcrumbItems={breadcrumbItems} />
-      </div>
+      <PageHeader breadcrumbItems={breadcrumbItems} />
 
       <Form {...form}>
         <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>

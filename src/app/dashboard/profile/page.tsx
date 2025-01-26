@@ -52,15 +52,12 @@ export default function PaginatePost() {
 
   return (
     <PrivateLayout>
-      <div className="py-4 flex flex-row gap-4 items-center">
-        <SidebarTrigger />
-        <PageHeader
-          breadcrumbItems={[
-            { title: "Dashboard", link: "/dashboard" },
-            { title: "Perfil", link: "/dashboard/profile" },
-          ]}
-        />
-      </div>
+      <PageHeader
+        breadcrumbItems={[
+          { title: "Dashboard", link: "/dashboard" },
+          { title: "Perfil", link: "/dashboard/profile" },
+        ]}
+      />
 
       <div className="flex flex-row gap-4 items-center justify-between">
         <Typography.H3>Meus Perfis</Typography.H3>

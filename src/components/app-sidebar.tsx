@@ -1,4 +1,4 @@
-import { FileText, User } from "lucide-react";
+import { FileText, Home, User } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +11,11 @@ import {
 } from "~/components/ui/sidebar";
 
 const menuItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+  },
   {
     title: "Meus perfis",
     url: "/dashboard/profile",
