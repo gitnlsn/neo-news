@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { FileText, User } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,9 +12,14 @@ import {
 
 const menuItems = [
   {
-    title: "Profile",
+    title: "Meus perfis",
     url: "/dashboard/profile",
     icon: User,
+  },
+  {
+    title: "Meus posts",
+    url: "/dashboard/post",
+    icon: FileText,
   },
 ];
 
@@ -23,7 +28,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Navegação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
