@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
+import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
@@ -29,7 +30,12 @@ export default function RootLayout({
       <body>
         <Suspense fallback={<div>Loading...</div>}>
           <TRPCReactProvider>
-            <NuqsAdapter>{children}</NuqsAdapter>
+            <NuqsAdapter>
+              <>
+                {children}
+                <Toaster />
+              </>
+            </NuqsAdapter>
           </TRPCReactProvider>
         </Suspense>
       </body>

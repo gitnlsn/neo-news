@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { PrivateLayout } from "~/components/private-layout";
@@ -33,6 +33,7 @@ import { api } from "~/trpc/react";
 import { uploadImage } from "~/utils/api/upload-image";
 
 export default function ProfileForm() {
+  const router = useRouter();
   const { profileId } = useParams<{ profileId: string }>();
 
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
@@ -97,6 +98,7 @@ export default function ProfileForm() {
           ? "Perfil criado com sucesso"
           : "Perfil atualizado com sucesso",
       );
+      router.back();
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

@@ -1,6 +1,5 @@
 "use client";
 
-import dayjs from "dayjs";
 import { MoreHorizontal, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -36,6 +35,7 @@ import {
 import { Typography } from "~/components/ui/typography";
 import { useNuqsPagination } from "~/hooks/use-nuqs-pagination";
 import { api } from "~/trpc/react";
+import dayjs from "~/utils/date/dayjs";
 
 export default function PaginatePost() {
   const router = useRouter();
@@ -70,7 +70,7 @@ export default function PaginatePost() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">
+            <TableHead>
               <p>Título</p>
               <p>(perfil)</p>
             </TableHead>
@@ -86,7 +86,12 @@ export default function PaginatePost() {
                 <p>({post.profile.title})</p>
               </TableCell>
               <TableCell>
-                {dayjs(post.createdAt).format("DD/MM/YYYY")}
+                <div className="flex flex-col">
+                  <p>
+                    {dayjs(post.createdAt).format("DD/MM/YYYY [às] HH[h]mm")}
+                  </p>
+                  <p>{dayjs(post.createdAt).fromNow()}</p>
+                </div>
               </TableCell>
               <TableCell>
                 <DropdownMenu>
