@@ -1,3 +1,4 @@
+import { UserDeleteProfileUseCase } from "~/use-cases/user-delete-profile";
 import { UserPaginateProfilesUseCase } from "~/use-cases/user-paginate-profiles";
 import { UserShowProfileUseCase } from "~/use-cases/user-show-profile";
 import { UserUpsertProfileUseCase } from "~/use-cases/user-upsert-profile";
@@ -26,6 +27,15 @@ export const profileRouter = createTRPCRouter({
     .input(UserUpsertProfileUseCase.inputSchema.omit({ userId: true }))
     .mutation(async ({ input, ctx }) => {
       return await new UserUpsertProfileUseCase(ctx.db).execute({
+        ...input,
+        userId: ctx.session.user.id,
+      });
+    }),
+
+  delete: protectedProcedure
+    .input(UserDeleteProfileUseCase.inputSchema.omit({ userId: true }))
+    .mutation(async ({ input, ctx }) => {
+      return await new UserDeleteProfileUseCase(ctx.db).execute({
         ...input,
         userId: ctx.session.user.id,
       });

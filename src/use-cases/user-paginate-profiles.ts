@@ -39,6 +39,8 @@ export class UserPaginateProfilesUseCase {
 
     const where: Prisma.ProfileWhereInput = {
       userId: validatedInput.userId,
+
+      deletedAt: null,
     };
 
     if (search) {

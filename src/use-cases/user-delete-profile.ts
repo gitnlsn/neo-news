@@ -4,14 +4,14 @@ import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 const inputSchema = z.object({
-  userId: z.string().cuid(),
-  profileId: z.string().cuid(),
+  userId: z.string(),
+  profileId: z.string(),
 });
 
-export type UserShowProfileInput = z.infer<typeof inputSchema>;
+export type UserDeleteProfileInput = z.infer<typeof inputSchema>;
 
-export class UserShowProfileUseCase {
-  private input: UserShowProfileInput | null = null;
+export class UserDeleteProfileUseCase {
+  private input: UserDeleteProfileInput | null = null;
 
   constructor(private readonly database: PrismaClient) {}
 
@@ -30,29 +30,50 @@ export class UserShowProfileUseCase {
     return this.input;
   }
 
-  async execute(input: UserShowProfileInput) {
+  async execute(input: UserDeleteProfileInput) {
     const validatedInput = this.validateInput(input);
     // Logic here
 
+    const { userId, profileId } = validatedInput;
+
     const profile = await this.database.profile.findUnique({
       where: {
-        userId: validatedInput.userId,
-        id: validatedInput.profileId,
+        id: profileId,
+        userId,
 
         deletedAt: null,
       },
+
       include: {
-        logo: true,
-        images: true,
+        posts: true,
       },
     });
 
-    if (!profile)
+    if (!profile) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Perfil não encontrado",
       });
+    }
 
-    return profile;
+    return await this.database.profile.update({
+      where: {
+        id: profileId,
+      },
+      data: {
+        deletedAt: new Date(),
+        posts: {
+          updateMany: {
+            where: {
+              profileId,
+            },
+            data: {
+              deletedAt: new Date(),
+              isPublished: false,
+            },
+          },
+        },
+      },
+    });
   }
 }

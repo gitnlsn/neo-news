@@ -85,6 +85,8 @@ export class UserUpsertProfileUseCase {
       where: {
         id: profileId,
         userId,
+
+        deletedAt: null,
       },
     });
 

@@ -23,4 +23,22 @@ describe("User Show Profile", () => {
 
     expect(result).toEqual(profile);
   });
+
+  it("should not show deleted profile", async () => {
+    const userShowProfile = new UserShowProfileUseCase(prisma);
+    // Tests here
+
+    const user = await fakeFactory.createUser();
+    const profile = await fakeFactory.createProfile({
+      userId: user.id,
+      deletedAt: new Date(),
+    });
+
+    await expect(
+      userShowProfile.execute({
+        userId: user.id,
+        profileId: profile.id,
+      }),
+    ).rejects.toThrow("Perfil não encontrado");
+  });
 });

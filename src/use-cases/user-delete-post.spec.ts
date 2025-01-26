@@ -26,6 +26,7 @@ describe("User Delete Post", () => {
     });
 
     expect(deletedPost.deletedAt).toBeDefined();
+    expect(deletedPost.isPublished).toBe(false);
   });
 
   it("should not delete post from other user", async () => {

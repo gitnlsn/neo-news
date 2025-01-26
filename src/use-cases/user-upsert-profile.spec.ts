@@ -43,4 +43,24 @@ describe("User Upsert Profile", () => {
     expect(updatedProfile?.title).toEqual("new title");
     expect(updatedProfile?.description).toEqual("new description");
   });
+
+  it("should not update deleted profile", async () => {
+    const userUpsertProfile = new UserUpsertProfileUseCase(prisma);
+    // Tests here
+
+    const user = await fakeFactory.createUser();
+    const profile = await fakeFactory.createProfile({
+      userId: user.id,
+      deletedAt: new Date(),
+    });
+
+    await expect(
+      userUpsertProfile.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title: "new title",
+        description: "new description",
+      }),
+    ).rejects.toThrow("Perfil não encontrado");
+  });
 });

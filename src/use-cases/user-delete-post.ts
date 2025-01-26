@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import type { PrismaTransaction } from "~/types/prisma-transaction";
 
 const inputSchema = z.object({
   userId: z.string(),
@@ -13,7 +14,7 @@ export type UserDeletePostInput = z.infer<typeof inputSchema>;
 export class UserDeletePostUseCase {
   private input: UserDeletePostInput | null = null;
 
-  constructor(private readonly database: PrismaClient) {}
+  constructor(private readonly database: PrismaClient | PrismaTransaction) {}
 
   static get inputSchema() {
     return inputSchema;
@@ -45,10 +46,6 @@ export class UserDeletePostUseCase {
 
         deletedAt: null,
       },
-
-      include: {
-        images: true,
-      },
     });
 
     if (!post) {
@@ -64,6 +61,7 @@ export class UserDeletePostUseCase {
       },
       data: {
         deletedAt: new Date(),
+        isPublished: false,
       },
     });
   }

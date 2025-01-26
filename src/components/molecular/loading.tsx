@@ -1,6 +1,6 @@
+import { type VariantProps, cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { type VariantProps, cva } from "class-variance-authority";
 
 const variants = cva("h-4 w-4 animate-spin", {
   variants: {
