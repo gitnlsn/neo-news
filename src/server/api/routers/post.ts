@@ -1,10 +1,4 @@
-import { z } from "zod";
-
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { UserDeletePostUseCase } from "~/use-cases/user-delete-post";
 import { UserPaginatePostsUseCase } from "~/use-cases/user-paginate-posts";
 import { UserShowPostUseCase } from "~/use-cases/user-show-post";

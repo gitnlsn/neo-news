@@ -16,15 +16,16 @@ describe("User Upsert Post", () => {
     const user = await fakeFactory.createUser();
     const profile = await fakeFactory.createProfile({ userId: user.id });
 
+    const title = await fakeFactory.generateTitleForUniqueSlug();
     const post = await userUpsertPost.execute({
       userId: user.id,
       profileId: profile.id,
-      title: "post title",
+      title,
       content: "post content",
     });
 
     expect(post).toBeDefined();
-    expect(post.title).toBe("post title");
+    expect(post.title).toBe(title);
     expect(post.content).toBe("post content");
   });
 
@@ -35,10 +36,11 @@ describe("User Upsert Post", () => {
     const user = await fakeFactory.createUser();
     const profile = await fakeFactory.createProfile({ userId: user.id });
 
+    const title = await fakeFactory.generateTitleForUniqueSlug();
     const post = await userUpsertPost.execute({
       userId: user.id,
       profileId: profile.id,
-      title: "post title",
+      title,
       content: "post content",
     });
 
@@ -46,12 +48,12 @@ describe("User Upsert Post", () => {
       postId: post.id,
       userId: user.id,
       profileId: profile.id,
-      title: "post title updated",
+      title: `${post.title} updated`,
       content: "post content updated",
     });
 
     expect(updatedPost).toBeDefined();
-    expect(updatedPost.title).toBe("post title updated");
+    expect(updatedPost.title).toBe(`${post.title} updated`);
     expect(updatedPost.content).toBe("post content updated");
   });
 
@@ -64,10 +66,11 @@ describe("User Upsert Post", () => {
 
     const image = await fakeFactory.createImage();
 
+    const title = await fakeFactory.generateTitleForUniqueSlug();
     const post = await userUpsertPost.execute({
       userId: user.id,
       profileId: profile.id,
-      title: "post title",
+      title,
       content: `<img src="${image.url}" alt="image" />`,
       images: [image],
     });
@@ -89,10 +92,11 @@ describe("User Upsert Post", () => {
       });
 
       await expect(async () => {
+        const title = await fakeFactory.generateTitleForUniqueSlug();
         await userUpsertPost.execute({
           userId: user.id,
           profileId: otherUserProfile.id,
-          title: "post title",
+          title,
           content: "post content",
         });
       }).rejects.toThrow("Perfil não encontrado");
@@ -110,15 +114,85 @@ describe("User Upsert Post", () => {
         deletedAt: new Date(),
       });
 
+      const title = await fakeFactory.generateTitleForUniqueSlug();
       await expect(
         userUpsertPost.execute({
           postId: post.id,
           userId: user.id,
           profileId: profile.id,
-          title: "post title",
+          title,
           content: "post content",
         }),
       ).rejects.toThrow("Post não encontrado");
+    });
+
+    it("should return error when create post with same slug", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      // Tests here
+
+      const user = await fakeFactory.createUser();
+      const profile = await fakeFactory.createProfile({ userId: user.id });
+
+      const title = await fakeFactory.generateTitleForUniqueSlug();
+      await userUpsertPost.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title,
+        content: "post content",
+      });
+
+      const user2 = await fakeFactory.createUser();
+      const profile2 = await fakeFactory.createProfile({ userId: user2.id });
+
+      await expect(
+        userUpsertPost.execute({
+          userId: user2.id,
+          profileId: profile2.id,
+          title,
+          content: "post content",
+        }),
+      ).rejects.toThrow(
+        "Já existe um post com este título. Por favor, escolha outro título.",
+      );
+    });
+
+    it("should return error when create post with same slug", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      // Tests here
+
+      const user1 = await fakeFactory.createUser();
+      const profile1 = await fakeFactory.createProfile({ userId: user1.id });
+
+      const title = await fakeFactory.generateTitleForUniqueSlug();
+      const post1 = await userUpsertPost.execute({
+        userId: user1.id,
+        profileId: profile1.id,
+        title,
+        content: "post content",
+      });
+
+      const user2 = await fakeFactory.createUser();
+      const profile2 = await fakeFactory.createProfile({ userId: user2.id });
+
+      const title2 = await fakeFactory.generateTitleForUniqueSlug();
+      await userUpsertPost.execute({
+        userId: user2.id,
+        profileId: profile2.id,
+        title: title2,
+        content: "post content 2",
+      });
+
+      await expect(
+        userUpsertPost.execute({
+          userId: user1.id,
+          profileId: profile1.id,
+          postId: post1.id,
+          title: title2,
+          content: "post content 2",
+        }),
+      ).rejects.toThrow(
+        "Já existe um post com este título. Por favor, escolha outro título.",
+      );
     });
   });
 });

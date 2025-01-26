@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import slugify from "slugify";
 import type { UploadedFile } from "~/types/UploadedFile";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
 
@@ -70,13 +71,30 @@ export class UserUpsertPostUseCase {
       });
     }
 
+    const newSlug = slugify(title, { lower: true, trim: true, strict: true });
+
     if (!postId) {
+      const existingPostWithSameSlug = await this.database.post.findUnique({
+        where: {
+          slug: newSlug,
+        },
+      });
+
+      if (existingPostWithSameSlug) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message:
+            "Já existe um post com este título. Por favor, escolha outro título.",
+        });
+      }
+
       return await this.database.post.create({
         data: {
           profileId: existingProfile.id,
 
           title,
           content,
+          slug: newSlug,
 
           isPublished,
 
@@ -97,6 +115,9 @@ export class UserUpsertPostUseCase {
       });
     }
 
+    /*
+      Update post
+    */
     const existingPost = await this.database.post.findUnique({
       where: {
         id: postId,
@@ -113,6 +134,22 @@ export class UserUpsertPostUseCase {
       });
     }
 
+    if (existingPost.slug !== newSlug) {
+      const existingPostWithSameSlug = await this.database.post.findUnique({
+        where: {
+          slug: newSlug,
+        },
+      });
+
+      if (existingPostWithSameSlug) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message:
+            "Já existe um post com este título. Por favor, escolha outro título.",
+        });
+      }
+    }
+
     return await this.database.post.update({
       where: { id: existingPost.id },
       data: {
@@ -120,6 +157,7 @@ export class UserUpsertPostUseCase {
         content,
 
         isPublished,
+        slug: newSlug,
 
         images: {
           connect:

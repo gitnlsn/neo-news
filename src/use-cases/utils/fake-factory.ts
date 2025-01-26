@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { faker } from "@faker-js/faker";
 import type { Prisma, PrismaClient } from "@prisma/client";
+import slugify from "slugify";
 
 export class FakeFactory {
   constructor(private readonly prisma: PrismaClient) {}
@@ -58,10 +59,17 @@ export class FakeFactory {
       imageIds?: string[];
     },
   ) {
+    const title = await this.generateTitleForUniqueSlug();
+
     return this.prisma.post.create({
       data: {
-        title: data?.title ?? faker.lorem.sentence(),
+        title: data?.title ?? title,
         content: data?.content ?? faker.lorem.paragraph(),
+        slug: slugify(data?.slug ?? title, {
+          lower: true,
+          strict: true,
+          trim: true,
+        }),
         images: {
           connect: data?.imageIds?.map((imageId) => ({ id: imageId })),
         },
@@ -73,5 +81,25 @@ export class FakeFactory {
         images: true,
       },
     });
+  }
+
+  async generateTitleForUniqueSlug() {
+    const posts = await this.prisma.post.findMany({
+      select: {
+        title: true,
+      },
+
+      distinct: ["title"],
+    });
+
+    const titles = posts.map((post) => post.title);
+
+    let possibleTitle = faker.lorem.sentence() + randomUUID();
+
+    while (titles.includes(possibleTitle)) {
+      possibleTitle = faker.lorem.sentence() + randomUUID();
+    }
+
+    return possibleTitle;
   }
 }
