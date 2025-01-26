@@ -8,10 +8,10 @@ const inputSchema = z.object({
   postId: z.string(),
 });
 
-export type UserShowPostInput = z.infer<typeof inputSchema>;
+export type UserDeletePostInput = z.infer<typeof inputSchema>;
 
-export class UserShowPostUseCase {
-  private input: UserShowPostInput | null = null;
+export class UserDeletePostUseCase {
+  private input: UserDeletePostInput | null = null;
 
   constructor(private readonly database: PrismaClient) {}
 
@@ -30,13 +30,13 @@ export class UserShowPostUseCase {
     return this.input;
   }
 
-  async execute(input: UserShowPostInput) {
+  async execute(input: UserDeletePostInput) {
     const validatedInput = this.validateInput(input);
     // Logic here
 
     const { userId, postId } = validatedInput;
 
-    return await this.database.post.findFirst({
+    const post = await this.database.post.findUnique({
       where: {
         id: postId,
         profile: {
@@ -48,6 +48,22 @@ export class UserShowPostUseCase {
 
       include: {
         images: true,
+      },
+    });
+
+    if (!post) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Post não encontrado",
+      });
+    }
+
+    return await this.database.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        deletedAt: new Date(),
       },
     });
   }

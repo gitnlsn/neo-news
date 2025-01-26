@@ -95,8 +95,9 @@ model Post {
     profile   Profile @relation(fields: [profileId], references: [id])
     profileId String
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 }
 
 model File {

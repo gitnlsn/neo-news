@@ -65,6 +65,7 @@ export class FakeFactory {
           connect: data?.imageIds?.map((imageId) => ({ id: imageId })),
         },
         profileId: data?.profileId ?? "",
+        deletedAt: data?.deletedAt ?? undefined,
       },
 
       include: {

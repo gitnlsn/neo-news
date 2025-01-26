@@ -32,4 +32,24 @@ describe("User Show Post", () => {
     expect(result?.content).toEqual(post.content);
     expect(result?.images.length).toEqual(post.images.length);
   });
+
+  it("should not show deleted post", async () => {
+    const userShowPost = new UserShowPostUseCase(prisma);
+    // Tests here
+
+    const user = await fakeFactory.createUser();
+    const profile = await fakeFactory.createProfile({ userId: user.id });
+
+    const post = await fakeFactory.createPost({
+      profileId: profile.id,
+      deletedAt: new Date(),
+    });
+
+    const result = await userShowPost.execute({
+      userId: user.id,
+      postId: post.id,
+    });
+
+    expect(result).toBeNull();
+  });
 });

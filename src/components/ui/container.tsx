@@ -8,7 +8,7 @@ const Container = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("container mx-auto px-4", className)}
+      className={cn("container mx-auto px-4 flex flex-col gap-4", className)}
       {...props}
     />
   );

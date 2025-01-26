@@ -101,6 +101,8 @@ export class UserUpsertPostUseCase {
       where: {
         id: postId,
         profileId: existingProfile.id,
+
+        deletedAt: null,
       },
     });
 

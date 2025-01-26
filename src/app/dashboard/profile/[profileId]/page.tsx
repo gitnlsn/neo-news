@@ -27,10 +27,10 @@ import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
 import PageHeader from "~/components/ui/page-header";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
+import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 import { profileSchema } from "~/schemas/form-validation/profile";
 import { api } from "~/trpc/react";
 import { uploadImage } from "~/utils/api/upload-image";
-import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 
 export default function ProfileForm() {
   const { profileId } = useParams<{ profileId: string }>();

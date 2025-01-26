@@ -45,6 +45,8 @@ export class UserPaginatePostsUseCase {
         : {
             userId: validatedInput.userId,
           },
+
+      deletedAt: null,
     };
 
     if (search) {
@@ -59,6 +61,10 @@ export class UserPaginatePostsUseCase {
         where,
 
         ...buildPaginationTakeSkip({ page, perPage }),
+
+        include: {
+          profile: true,
+        },
       }),
       this.database.post.count({ where }),
     ]);

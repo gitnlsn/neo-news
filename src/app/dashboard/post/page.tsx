@@ -1,0 +1,161 @@
+"use client";
+
+import dayjs from "dayjs";
+import { MoreHorizontal, PlusIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Pagination } from "~/components/pagination";
+import { PrivateLayout } from "~/components/private-layout";
+import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { DropdownMenuItem } from "~/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import PageHeader from "~/components/ui/page-header";
+import { SidebarTrigger } from "~/components/ui/sidebar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import { Typography } from "~/components/ui/typography";
+import { useNuqsPagination } from "~/hooks/use-nuqs-pagination";
+import { api } from "~/trpc/react";
+
+export default function PaginatePost() {
+  const router = useRouter();
+  const { page, setPage, perPage, setPerPage } = useNuqsPagination();
+
+  const postsQuery = api.post.paginate.useQuery({
+    page,
+    perPage,
+  });
+
+  const deletePost = api.post.delete.useMutation();
+  return (
+    <PrivateLayout>
+      <div className="py-4 flex flex-row gap-4 items-center">
+        <SidebarTrigger />
+        <PageHeader
+          breadcrumbItems={[
+            { title: "Dashboard", link: "/dashboard" },
+            { title: "Posts", link: "/dashboard/post" },
+          ]}
+        />
+      </div>
+
+      <div className="flex flex-row gap-4 items-center justify-between">
+        <Typography.H3>Seus posts</Typography.H3>
+        <Button size="sm" onClick={() => router.push("/dashboard/post/create")}>
+          <PlusIcon />
+          Novo post
+        </Button>
+      </div>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">
+              <p>Título</p>
+              <p>(perfil)</p>
+            </TableHead>
+            <TableHead>Data de criação</TableHead>
+            <TableHead>Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {postsQuery.data?.posts.map((post) => (
+            <TableRow key={post.id}>
+              <TableCell className="font-medium">
+                <p>{post.title}</p>
+                <p>({post.profile.title})</p>
+              </TableCell>
+              <TableCell>
+                {dayjs(post.createdAt).format("DD/MM/YYYY")}
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+
+                    <DropdownMenuItem
+                      onClick={() => router.push(`/dashboard/post/${post.id}`)}
+                    >
+                      Editar
+                    </DropdownMenuItem>
+
+                    <Dialog>
+                      <DialogTrigger className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 disabled:opacity-50">
+                        Deletar
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogTitle>
+                          Tem certeza de que quer deletar o post?
+                        </DialogTitle>
+                        <DialogDescription>
+                          Esta ação não pode ser desfeita.
+                        </DialogDescription>
+                        <DialogFooter>
+                          <DialogClose>
+                            <Button
+                              onClick={() => {
+                                deletePost.mutate(
+                                  { postId: post.id },
+                                  {
+                                    onSuccess: () => {
+                                      toast.success(
+                                        "Post deletado com sucesso",
+                                      );
+                                      postsQuery.refetch();
+                                    },
+                                    onError: () => {
+                                      toast.error("Falha ao deletar post");
+                                    },
+                                  },
+                                );
+                              }}
+                            >
+                              Deletar
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <Pagination
+        currentPage={page}
+        totalItems={postsQuery.data?.total ?? 0}
+        onPageChange={(page) => setPage(page)}
+        perPage={perPage}
+      />
+    </PrivateLayout>
+  );
+}

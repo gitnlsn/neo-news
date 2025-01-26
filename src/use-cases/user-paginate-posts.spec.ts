@@ -108,4 +108,27 @@ describe("User Paginate Posts", () => {
 
     expect(posts[0]?.id).toBe(post1.id);
   });
+
+  it("should not list deleted posts", async () => {
+    const userPaginatePosts = new UserPaginatePostsUseCase(prisma);
+    // Tests here
+
+    const user = await fakeFactory.createUser();
+    const profile = await fakeFactory.createProfile({ userId: user.id });
+
+    const post1 = await fakeFactory.createPost({ profileId: profile.id });
+    const post2 = await fakeFactory.createPost({
+      profileId: profile.id,
+      deletedAt: new Date(),
+    });
+
+    const { posts, total } = await userPaginatePosts.execute({
+      userId: user.id,
+    });
+
+    expect(posts.length).toBe(1);
+    expect(total).toBe(1);
+
+    expect(posts[0]?.id).toBe(post1.id);
+  });
 });

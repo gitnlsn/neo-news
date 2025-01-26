@@ -5,7 +5,7 @@ import { TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { z } from "zod";
 import { uploadImage } from "~/utils/api/upload-image";
 import { Button } from "../ui/button";

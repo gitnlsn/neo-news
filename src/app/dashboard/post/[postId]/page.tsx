@@ -34,9 +34,9 @@ import {
 } from "~/components/ui/select";
 import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
+import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 import { postSchema } from "~/schemas/form-validation/post";
 import { api } from "~/trpc/react";
-import { useBreadcrumb } from "~/hooks/use-breadcrumb";
 
 export default function ProfileForm() {
   const { postId } = useParams<{ postId: string }>();

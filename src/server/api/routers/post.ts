@@ -5,6 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { UserDeletePostUseCase } from "~/use-cases/user-delete-post";
 import { UserPaginatePostsUseCase } from "~/use-cases/user-paginate-posts";
 import { UserShowPostUseCase } from "~/use-cases/user-show-post";
 import { UserUpsertPostUseCase } from "~/use-cases/user-upsert-post";
@@ -32,6 +33,15 @@ export const postRouter = createTRPCRouter({
     .input(UserShowPostUseCase.inputSchema.omit({ userId: true }))
     .query(async ({ ctx, input }) => {
       return await new UserShowPostUseCase(ctx.db).execute({
+        userId: ctx.session.user.id,
+        ...input,
+      });
+    }),
+
+  delete: protectedProcedure
+    .input(UserDeletePostUseCase.inputSchema.omit({ userId: true }))
+    .mutation(async ({ ctx, input }) => {
+      return await new UserDeletePostUseCase(ctx.db).execute({
         userId: ctx.session.user.id,
         ...input,
       });

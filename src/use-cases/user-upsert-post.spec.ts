@@ -88,7 +88,7 @@ describe("User Upsert Post", () => {
         userId: otherUser.id,
       });
 
-      expect(async () => {
+      await expect(async () => {
         await userUpsertPost.execute({
           userId: user.id,
           profileId: otherUserProfile.id,
@@ -96,6 +96,29 @@ describe("User Upsert Post", () => {
           content: "post content",
         });
       }).rejects.toThrow("Perfil não encontrado");
+    });
+
+    it("should not update deleted post", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      // Tests here
+
+      const user = await fakeFactory.createUser();
+      const profile = await fakeFactory.createProfile({ userId: user.id });
+
+      const post = await fakeFactory.createPost({
+        profileId: profile.id,
+        deletedAt: new Date(),
+      });
+
+      await expect(
+        userUpsertPost.execute({
+          postId: post.id,
+          userId: user.id,
+          profileId: profile.id,
+          title: "post title",
+          content: "post content",
+        }),
+      ).rejects.toThrow("Post não encontrado");
     });
   });
 });
