@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { set, type z } from "zod";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -24,7 +25,7 @@ import {
   FormWrapper,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
-import PageHeader, { NavigationItem } from "~/components/ui/page-header";
+import PageHeader from "~/components/ui/page-header";
 import {
   Select,
   SelectContent,
@@ -32,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
 import { postSchema } from "~/schemas/form-validation/post";
 import { api } from "~/trpc/react";
@@ -40,6 +40,8 @@ import { api } from "~/trpc/react";
 export default function ProfileForm() {
   const router = useRouter();
   const { postId } = useParams<{ postId: string }>();
+
+  const queryClient = useQueryClient();
 
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
 
@@ -101,6 +103,7 @@ export default function ProfileForm() {
           : "Post atualizado com sucesso",
       );
       router.back();
+      queryClient.invalidateQueries({ queryKey: ["post"] });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

@@ -2,6 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { UserDeletePostUseCase } from "~/use-cases/user-delete-post";
 import { UserPaginatePostsUseCase } from "~/use-cases/user-paginate-posts";
 import { UserShowPostUseCase } from "~/use-cases/user-show-post";
+import { UserTogglePostPublishStatusUseCase } from "~/use-cases/user-toggle-post-publish-status";
 import { UserUpsertPostUseCase } from "~/use-cases/user-upsert-post";
 
 export const postRouter = createTRPCRouter({
@@ -36,6 +37,17 @@ export const postRouter = createTRPCRouter({
     .input(UserDeletePostUseCase.inputSchema.omit({ userId: true }))
     .mutation(async ({ ctx, input }) => {
       return await new UserDeletePostUseCase(ctx.db).execute({
+        userId: ctx.session.user.id,
+        ...input,
+      });
+    }),
+
+  togglePublishStatus: protectedProcedure
+    .input(
+      UserTogglePostPublishStatusUseCase.inputSchema.omit({ userId: true }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await new UserTogglePostPublishStatusUseCase(ctx.db).execute({
         userId: ctx.session.user.id,
         ...input,
       });

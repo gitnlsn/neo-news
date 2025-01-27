@@ -1,6 +1,7 @@
 "use client";
 
-import { MoreHorizontal, PlusIcon } from "lucide-react";
+import { LinkIcon, MoreHorizontal, PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loading } from "~/components/molecular/loading";
@@ -25,6 +26,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import PageHeader from "~/components/ui/page-header";
 import { SidebarTrigger } from "~/components/ui/sidebar";
+import { Switch } from "~/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -34,7 +36,14 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { Typography } from "~/components/ui/typography";
+import { env } from "~/env";
 import { useNuqsPagination } from "~/hooks/use-nuqs-pagination";
 import { api } from "~/trpc/react";
 import dayjs from "~/utils/date/dayjs";
@@ -49,6 +58,9 @@ export default function PaginatePost() {
   });
 
   const deletePost = api.post.delete.useMutation();
+
+  const togglePublishStatus = api.post.togglePublishStatus.useMutation();
+
   return (
     <PrivateLayout>
       <PageHeader
@@ -74,6 +86,7 @@ export default function PaginatePost() {
               <p>(perfil)</p>
             </TableHead>
             <TableHead>Data de criação</TableHead>
+            <TableHead>Publicado</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -90,6 +103,54 @@ export default function PaginatePost() {
                     {dayjs(post.createdAt).format("DD/MM/YYYY [às] HH[h]mm")}
                   </p>
                   <p>{dayjs(post.createdAt).fromNow()}</p>
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-row gap-2 items-center">
+                  <Switch
+                    checked={post.isPublished}
+                    onCheckedChange={() => {
+                      togglePublishStatus.mutate(
+                        { postId: post.id },
+                        {
+                          onSuccess: (data) => {
+                            toast.success(
+                              data.isPublished
+                                ? "Publicação foi publicada com sucesso"
+                                : "Publicação foi removida com sucesso",
+                            );
+                            postsQuery.refetch();
+                          },
+                          onError: (error) => {
+                            toast.error(error.message);
+                          },
+                        },
+                      );
+                    }}
+                  />
+                  {post.isPublished && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                `${env.NEXT_PUBLIC_APP_PUBLIC_URL}/post/${post.slug}`,
+                              );
+                              toast.success("Link copiado para clipboard");
+                            }}
+                          >
+                            <LinkIcon />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Abrir em nova aba</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                 </div>
               </TableCell>
               <TableCell>
@@ -156,13 +217,13 @@ export default function PaginatePost() {
         <TableFooter>
           {postsQuery.isLoading && (
             <TableRow>
-              <TableCell colSpan={3}>
+              <TableCell colSpan={4}>
                 <Loading size="xl" className="mx-auto" />
               </TableCell>
             </TableRow>
           )}
           <TableRow>
-            <TableCell colSpan={3}>
+            <TableCell colSpan={4}>
               <Pagination
                 currentPage={page}
                 totalItems={postsQuery.data?.total ?? 0}

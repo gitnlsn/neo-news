@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import type { z } from "zod";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -34,6 +35,8 @@ import { uploadImage } from "~/utils/api/upload-image";
 export default function ProfileForm() {
   const router = useRouter();
   const { profileId } = useParams<{ profileId: string }>();
+
+  const queryClient = useQueryClient();
 
   const richTextEditorRef = useRef<RichTextEditorRef>(null);
 
@@ -97,6 +100,7 @@ export default function ProfileForm() {
           : "Perfil atualizado com sucesso",
       );
       router.back();
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
