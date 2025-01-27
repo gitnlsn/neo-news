@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import type { UploadedFile } from "~/types/UploadedFile";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
+import { sanitizeHtml } from "~/utils/use-cases/sanitize-html";
 
 const inputSchema = z.object({
   userId: z.string().cuid(),
@@ -73,6 +74,8 @@ export class UserUpsertPostUseCase {
 
     const newSlug = slugify(title, { lower: true, trim: true, strict: true });
 
+    const sanitizedContent = sanitizeHtml(content);
+
     if (!postId) {
       const existingPostWithSameSlug = await this.database.post.findUnique({
         where: {
@@ -93,7 +96,7 @@ export class UserUpsertPostUseCase {
           profileId: existingProfile.id,
 
           title,
-          content,
+          content: sanitizedContent,
           slug: newSlug,
 
           isPublished,
@@ -154,7 +157,7 @@ export class UserUpsertPostUseCase {
       where: { id: existingPost.id },
       data: {
         title,
-        content,
+        content: sanitizedContent,
 
         isPublished,
         slug: newSlug,

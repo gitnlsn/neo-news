@@ -81,6 +81,10 @@
   }
 }
 
+.tiptap p {
+  @apply min-h-6 block;
+}
+
 .tiptap h1 {
   @apply text-3xl font-bold;
 }
