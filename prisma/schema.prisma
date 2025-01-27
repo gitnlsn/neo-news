@@ -125,3 +125,14 @@ model File {
     profileFromImage   Profile? @relation(name: "profileImages", fields: [profileFromImageId], references: [id])
     profileFromImageId String?
 }
+
+model Moderation {
+    id String @id @default(cuid())
+
+    text String @unique @db.Text
+
+    isSafe  Boolean
+    reasons String[]
+
+    createdAt DateTime @default(now())
+}

@@ -15,6 +15,8 @@ export const env = createEnv({
 
     APP_PUBLIC_URL: z.string().url(),
 
+    GEMINI_API_KEY: z.string(),
+
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
 
@@ -52,6 +54,8 @@ export const env = createEnv({
 
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 
     CLOUDFLARE_R2_REGION: process.env.CLOUDFLARE_R2_REGION,
     CLOUDFLARE_R2_ACCOUNT_ID: process.env.CLOUDFLARE_R2_ACCOUNT_ID,

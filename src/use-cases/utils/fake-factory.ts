@@ -102,4 +102,14 @@ export class FakeFactory {
 
     return possibleTitle;
   }
+
+  async createModeration(data?: Partial<Prisma.ModerationCreateInput>) {
+    return this.prisma.moderation.create({
+      data: {
+        text: data?.text ?? `${faker.lorem.sentence()} ${randomUUID()}`,
+        isSafe: data?.isSafe ?? true,
+        reasons: data?.reasons ?? [`${faker.lorem.sentence()} ${randomUUID()}`],
+      },
+    });
+  }
 }
