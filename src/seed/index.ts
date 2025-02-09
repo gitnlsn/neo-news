@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { randomUUID } from "node:crypto";
+import { PrismaClient } from "@prisma/client";
 import { env } from "~/env";
 import { FakeFactory } from "~/use-cases/utils/fake-factory";
 
