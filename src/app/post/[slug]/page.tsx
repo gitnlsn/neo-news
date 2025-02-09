@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
+import keywordExtractor from "keyword-extractor";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
-import dayjs from "~/utils/date/dayjs";
-import type { Metadata } from "next";
 import { env } from "~/env";
+import dayjs from "~/utils/date/dayjs";
 import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
-import keywordExtractor from "keyword-extractor";
 import { getVideoUrlsFromHtml } from "~/utils/use-cases/get-video-urls-from-html";
 
 interface Params {

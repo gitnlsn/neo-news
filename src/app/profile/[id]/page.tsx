@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
+import keywordExtractor from "keyword-extractor";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
-import type { Metadata } from "next";
 import { env } from "~/env";
 import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
-import keywordExtractor from "keyword-extractor";
 
 interface Params {
   id: string;
