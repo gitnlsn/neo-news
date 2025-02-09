@@ -4,7 +4,6 @@ services:
   dev-db:
     image: postgres:latest
     container_name: postgres
-    restart: always
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
@@ -15,7 +14,6 @@ services:
   test-db:
     image: postgres:latest
     container_name: test-db
-    restart: always
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword

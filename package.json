@@ -7,7 +7,7 @@
     "docker:up": "docker compose up",
     "docker:down": "docker-compose down --rmi all --volumes",
     "build": "next build",
-    "typecheck": "npx biome format --write && biome check --write --unsafe && tsc --noEmit  ",
+    "typecheck": "biome check --write --unsafe && tsc --noEmit",
     "test": "dotenv -e .env.test -e .env -- vitest run",
     "db:generate": "dotenv -e .env -- prisma generate",
     "db:push": "dotenv -e .env -- prisma db push",

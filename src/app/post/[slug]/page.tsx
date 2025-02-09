@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
 import { Separator } from "~/components/ui/separator";
@@ -53,8 +54,8 @@ export const getPost = async (props: Params) => {
 };
 
 export default async function Page({ params }: { params: Promise<Params> }) {
-  const foo = await params;
-  const post = await getPost({ slug: foo.slug });
+  const awaitedParams = await params;
+  const post = await getPost({ slug: awaitedParams.slug });
 
   if (!post.isPublished) {
     redirect("/");
@@ -67,36 +68,16 @@ export default async function Page({ params }: { params: Promise<Params> }) {
 
         <Typography.Muted>
           Publicado em {dayjs(post.createdAt).format("DD/MM/YYYY")},{" "}
-          {dayjs(post.createdAt).fromNow()}
+          {dayjs(post.createdAt).fromNow()}, por{" "}
+          <Link href={`/profile/${post.profile.id}`} className="text-blue-600">
+            {post.profile.title} ({post.profile.user.email})
+          </Link>
         </Typography.Muted>
       </div>
 
       <div
         className="tiptap"
         dangerouslySetInnerHTML={{ __html: post.content }}
-      />
-
-      <Separator />
-
-      <div className="flex flex-col gap-0">
-        <Typography.H3>Publicado por: {post.profile.title}</Typography.H3>
-
-        <Typography.Muted>{post.profile.user.email}</Typography.Muted>
-
-        {post.profile.logo?.url && (
-          <Image
-            src={post.profile.logo.url}
-            alt={post.profile.title}
-            width={800}
-            height={800}
-            className="mx-auto"
-          />
-        )}
-      </div>
-
-      <div
-        className="tiptap"
-        dangerouslySetInnerHTML={{ __html: post.profile.description }}
       />
     </Container>
   );

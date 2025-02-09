@@ -1,6 +1,6 @@
-# Classificados Online
+# Neo-news
 
-Classificados Online é uma plataforma moderna de classificados, permitindo que usuários criem, gerenciem e visualizem anúncios de forma fácil e intuitiva. Este projeto foi construído utilizando a [T3 Stack](https://create.t3.gg/).
+Neo-news é uma plataforma moderna de classificados, permitindo que usuários criem, gerenciem e visualizem anúncios de forma fácil e intuitiva. Este projeto foi construído utilizando a [T3 Stack](https://create.t3.gg/).
 
 ## 🚀 Funcionalidades
 
@@ -27,17 +27,20 @@ Este projeto utiliza as seguintes tecnologias:
 Siga os passos abaixo para configurar o projeto em sua máquina local:
 
 1. **Clone o repositório**:
+
    ```bash
    git clone [url-do-repositorio]
    ```
 
 2. **Instale as dependências**:
+
    ```bash
    pnpm install
    ```
 
 3. **Configure as variáveis de ambiente**:
    Copie o arquivo de exemplo de variáveis de ambiente e preencha os valores necessários.
+
    ```bash
    cp .env.example .env
    ```
