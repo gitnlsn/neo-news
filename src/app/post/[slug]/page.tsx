@@ -1,11 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
-import { Separator } from "~/components/ui/separator";
 import { Typography } from "~/components/ui/typography";
 import dayjs from "~/utils/date/dayjs";
+import type { Metadata } from "next";
+import { env } from "~/env";
+import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
+import keywordExtractor from "keyword-extractor";
+import { getVideoUrlsFromHtml } from "~/utils/use-cases/get-video-urls-from-html";
 
 interface Params {
   slug: string;
@@ -52,6 +55,50 @@ export const getPost = async (props: Params) => {
 
   return post;
 };
+
+type Props = {
+  params: Params;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const post = await getPost({ slug: params.slug });
+
+  const fullDescription = getTextDescriptionFromHtml(post.content);
+
+  const description = fullDescription.slice(0, 512);
+
+  const keywords = keywordExtractor
+    .extract(fullDescription, {
+      language: "portuguese",
+      remove_duplicates: true,
+      remove_digits: true,
+    })
+    .slice(0, 128);
+
+  return {
+    title: post.title,
+    description,
+    keywords,
+    openGraph: {
+      title: post.title,
+      description,
+      url: `${env.APP_PUBLIC_URL}/post/${post.slug}`,
+      publishedTime: post.createdAt.toISOString(),
+      images: post.images.map((image) => ({
+        url: image.url,
+      })),
+      videos: getVideoUrlsFromHtml(post.content).map((url) => ({
+        url,
+      })),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description,
+      images: post.images.map((image) => image.url),
+    },
+  };
+}
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const awaitedParams = await params;

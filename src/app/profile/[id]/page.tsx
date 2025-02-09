@@ -3,6 +3,10 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
+import type { Metadata } from "next";
+import { env } from "~/env";
+import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
+import keywordExtractor from "keyword-extractor";
 
 interface Params {
   id: string;
@@ -61,6 +65,49 @@ export const getProfile = async (props: Params) => {
 
   return profile;
 };
+
+type Props = {
+  params: Params;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const profile = await getProfile({ id: params.id });
+
+  const fullDescription = getTextDescriptionFromHtml(profile.description);
+  const description = fullDescription.slice(0, 512);
+
+  const keywords = keywordExtractor
+    .extract(fullDescription, {
+      language: "portuguese",
+      remove_duplicates: true,
+      remove_digits: true,
+    })
+    .slice(0, 128);
+
+  return {
+    title: profile.title,
+    description,
+    keywords,
+    openGraph: {
+      title: profile.title,
+      description,
+      url: `${env.APP_PUBLIC_URL}/profile/${profile.id}`,
+      images: profile.logo
+        ? [
+            {
+              url: profile.logo.url,
+            },
+          ]
+        : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: profile.title,
+      description,
+      images: profile.logo ? [profile.logo.url] : [],
+    },
+  };
+}
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const awaitedParams = await params;
