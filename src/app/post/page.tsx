@@ -12,9 +12,11 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { filterImagesAndVideosFromHtml } from "~/utils/use-cases/filter-images-and-videos-from-html";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
 
 type PagePost = Post & {
+  author: string;
   imageUrl: string | undefined;
 };
 
@@ -41,6 +43,7 @@ async function getPosts(): Promise<PagePost[]> {
     images: undefined,
     profile: undefined,
     imageUrl: getUrlsFromHtml(post.content)[0],
+    author: post.profile.title,
   }));
 }
 
@@ -51,7 +54,7 @@ const EventCard = ({ post }: { post: PagePost }) => (
     tabIndex={0}
     aria-label={`Ver detalhes do evento: ${post.title}`}
   >
-    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className="max-h-[32rem] h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       {post.imageUrl && (
         <div className="relative h-48 w-full">
           <Image
@@ -65,21 +68,28 @@ const EventCard = ({ post }: { post: PagePost }) => (
       )}
 
       <CardHeader>
-        <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
+        <CardTitle className="text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
           {post.title}
         </CardTitle>
       </CardHeader>
 
-      <CardContent>
-        <div
-          className="tiptap max-h-24 overflow-hidden text-muted-foreground"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
-      </CardContent>
+      {!post.imageUrl && (
+        <CardContent className="flex-1">
+          <div
+            className="tiptap text-muted-foreground line-clamp-6"
+            dangerouslySetInnerHTML={{
+              __html: filterImagesAndVideosFromHtml(post.content),
+            }}
+          />
+        </CardContent>
+      )}
 
-      <CardFooter>
+      <CardFooter className="mt-auto flex flex-col items-start">
+        <p className="text-sm text-muted-foreground truncate max-w-full">
+          {post.author}
+        </p>
         <time
-          className="text-sm text-muted-foreground"
+          className="text-sm text-muted-foreground self-end"
           dateTime={post.createdAt.toISOString()}
         >
           {new Date(post.createdAt).toLocaleDateString("pt-BR", {
@@ -114,4 +124,4 @@ export default async function PostsPage() {
 
 // Configuração para SSG
 export const dynamic = "force-static";
-export const revalidate = 3600; // Revalidar a cada 1 hora
+export const revalidate = 60; // Revalidar a cada 1 minuto

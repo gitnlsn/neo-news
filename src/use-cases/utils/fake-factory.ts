@@ -8,7 +8,10 @@ export class FakeFactory {
 
   async createUser(data?: Prisma.UserCreateInput) {
     return this.prisma.user.create({
-      data: { ...data },
+      data: {
+        ...data,
+        email: data?.email ?? `${randomUUID()}${faker.internet.email()}`,
+      },
     });
   }
 
@@ -23,7 +26,7 @@ export class FakeFactory {
       data: {
         userId: data.userId,
         title: data?.title ?? faker.lorem.sentence(),
-        description: data?.description ?? faker.lorem.paragraph(),
+        description: data?.description ?? this.generateRichText(),
         logo: {
           connect: data?.logoId ? { id: data.logoId } : undefined,
         },
@@ -53,10 +56,53 @@ export class FakeFactory {
     });
   }
 
+  generateRichText(props?: {
+    textCount?: number;
+    imageCount?: number;
+    youtubeCount?: number;
+  }) {
+    const content: string[] = [];
+
+    for (let i = 0; i < (props?.textCount ?? 3); i++) {
+      content.push(faker.lorem.paragraph({ min: 32, max: 64 }));
+    }
+
+    const images: string[] = [];
+
+    for (let i = 0; i < (props?.imageCount ?? 2); i++) {
+      images.push("https://picsum.photos/200/300");
+    }
+
+    const youtube: string[] = [];
+
+    for (let i = 0; i < (props?.youtubeCount ?? 1); i++) {
+      youtube.push("https://www.youtube.com/embed/dQw4w9WgXcQ");
+    }
+
+    return [
+      content.map((paragraph) => `<p>${paragraph}</p>`),
+      images.map((image) => `<img src="${image}" />`),
+      youtube.map(
+        (youtube) =>
+          `<div data-youtube-video=""><iframe width="640" height="480" allowfullscreen="true" autoplay="false" disablekbcontrols="false" enableiframeapi="false" endtime="0" ivloadpolicy="0" loop="false" modestbranding="false" origin="" playlist="" src="${youtube}" start="0"></iframe></div>`,
+      ),
+    ]
+      .sort(() => Math.random() - 0.5)
+      .sort(() => Math.random() - 0.5)
+      .sort(() => Math.random() - 0.5)
+      .flat()
+      .join("");
+  }
+
   async createPost(
     data: Partial<Omit<Prisma.PostCreateInput, "images">> & {
       profileId: string;
       imageIds?: string[];
+      richTextProps?: {
+        textCount?: number;
+        imageCount?: number;
+        youtubeCount?: number;
+      };
     },
   ) {
     const title = await this.generateTitleForUniqueSlug();
@@ -64,7 +110,7 @@ export class FakeFactory {
     return this.prisma.post.create({
       data: {
         title: data?.title ?? title,
-        content: data?.content ?? faker.lorem.paragraph(),
+        content: data?.content ?? this.generateRichText(data?.richTextProps),
         slug: slugify(data?.slug ?? title, {
           lower: true,
           strict: true,
@@ -74,6 +120,7 @@ export class FakeFactory {
           connect: data?.imageIds?.map((imageId) => ({ id: imageId })),
         },
         profileId: data?.profileId ?? "",
+        isPublished: data?.isPublished ?? false,
         deletedAt: data?.deletedAt ?? undefined,
       },
 
