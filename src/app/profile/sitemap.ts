@@ -9,6 +9,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: {
       id: true,
       updatedAt: true,
+      logo: {
+        select: {
+          url: true,
+        },
+      },
     },
     where: {
       posts: {
@@ -28,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return profiles.map((profile) => ({
     url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}/profile/${profile.id}`,
+    images: profile.logo?.url ? [profile.logo.url] : [],
     lastModified: profile.updatedAt,
   }));
 }
