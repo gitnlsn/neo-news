@@ -1,12 +1,15 @@
 import type { UploadedFile } from "~/types/UploadedFile";
+import { compressImageFile } from "../next-client/compress-image-file";
 
 interface Response {
   image: UploadedFile;
 }
 
 export const uploadImage = async (file: File) => {
+  const compressedFile = await compressImageFile(file);
+
   const multipartFormData = new FormData();
-  multipartFormData.append("image", file);
+  multipartFormData.append("image", compressedFile);
 
   const response = await fetch("/api/r2/image-upload", {
     method: "POST",

@@ -26,7 +26,6 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
 import PageHeader from "~/components/ui/page-header";
-import { SidebarTrigger } from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
 import { profileSchema } from "~/schemas/form-validation/profile";
 import { api } from "~/trpc/react";
@@ -59,7 +58,7 @@ export default function ProfileForm() {
   const upsertProfileMutation = api.profile.upsert.useMutation();
   const showProfile = api.profile.show.useQuery(
     { profileId },
-    { enabled: !!profileId },
+    { enabled: !!profileId, refetchOnWindowFocus: false },
   );
 
   const breadcrumbItems = showProfile.data
