@@ -15,17 +15,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "always",
       priority: 1,
     },
-    {
-      url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}post/sitemap.xml`,
-      lastModified: new Date(),
-      changeFrequency: "always",
-      priority: 1,
-    },
-    {
-      url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}profile/sitemap.xml`,
-      lastModified: new Date(),
-      changeFrequency: "always",
-      priority: 1,
-    },
   ];
 }
