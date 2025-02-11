@@ -81,8 +81,12 @@
   }
 }
 
+.tiptap a {
+  @apply cursor-pointer text-blue-500;
+}
+
 .tiptap p {
-  @apply min-h-6 block;
+  @apply block min-h-6;
 }
 
 .tiptap h1 {

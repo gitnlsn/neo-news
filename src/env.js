@@ -15,6 +15,7 @@ export const env = createEnv({
 
     APP_PUBLIC_URL: z.string().url(),
 
+    WEB_RISK_API_KEY: z.string(),
     GEMINI_API_KEY: z.string(),
 
     GOOGLE_CLIENT_ID: z.string(),
@@ -56,6 +57,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    WEB_RISK_API_KEY: process.env.WEB_RISK_API_KEY,
 
     CLOUDFLARE_R2_REGION: process.env.CLOUDFLARE_R2_REGION,
     CLOUDFLARE_R2_ACCOUNT_ID: process.env.CLOUDFLARE_R2_ACCOUNT_ID,

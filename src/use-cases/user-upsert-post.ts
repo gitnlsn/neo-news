@@ -3,9 +3,10 @@ import { z } from "zod";
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
+import type { WebRisk } from "~/resources/web-risk";
 import type { UploadedFile } from "~/types/UploadedFile";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
-import { sanitizeHtml } from "~/utils/use-cases/sanitize-html";
+import { SystemSanitizeHtmlUseCase } from "./system-sanitize-html";
 
 const inputSchema = z.object({
   userId: z.string().cuid(),
@@ -24,7 +25,10 @@ export type UserUpsertPostInput = z.infer<typeof inputSchema>;
 export class UserUpsertPostUseCase {
   private input: UserUpsertPostInput | null = null;
 
-  constructor(private readonly database: PrismaClient) {}
+  constructor(
+    private readonly database: PrismaClient,
+    private readonly webRisk: WebRisk,
+  ) {}
 
   static get inputSchema() {
     return inputSchema;
@@ -47,8 +51,12 @@ export class UserUpsertPostUseCase {
   }) {
     const { description, uploadedImages } = props;
 
-    const urls = getUrlsFromHtml(description);
-    return uploadedImages.filter((image) => urls.includes(image.url));
+    const urls = getUrlsFromHtml(description).map((url) =>
+      url.replace(/\/$/, ""),
+    );
+    return uploadedImages.filter((image) =>
+      urls.includes(image.url.replace(/\/$/, "")),
+    );
   }
 
   async execute(input: UserUpsertPostInput) {
@@ -74,7 +82,14 @@ export class UserUpsertPostUseCase {
 
     const newSlug = slugify(title, { lower: true, trim: true, strict: true });
 
-    const sanitizedContent = sanitizeHtml(content);
+    const systemSanitizeHtmlUseCase = new SystemSanitizeHtmlUseCase(
+      this.database,
+      this.webRisk,
+    );
+
+    const sanitizedContent = await systemSanitizeHtmlUseCase.execute({
+      html: content,
+    });
 
     if (!postId) {
       const existingPostWithSameSlug = await this.database.post.findUnique({
@@ -105,7 +120,7 @@ export class UserUpsertPostUseCase {
             connect:
               images && images.length > 0
                 ? this.filterUsedImages({
-                    description: content,
+                    description: sanitizedContent,
                     uploadedImages: images,
                   }).map((image) => ({ id: image.id }))
                 : undefined,
@@ -166,7 +181,7 @@ export class UserUpsertPostUseCase {
           connect:
             images && images.length > 0
               ? this.filterUsedImages({
-                  description: content,
+                  description: sanitizedContent,
                   uploadedImages: images,
                 }).map((image) => ({ id: image.id }))
               : undefined,

@@ -1,3 +1,4 @@
+import { WebRisk } from "~/resources/web-risk";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { UserDeletePostUseCase } from "~/use-cases/user-delete-post";
 import { UserPaginatePostsUseCase } from "~/use-cases/user-paginate-posts";
@@ -9,7 +10,8 @@ export const postRouter = createTRPCRouter({
   upsert: protectedProcedure
     .input(UserUpsertPostUseCase.inputSchema.omit({ userId: true }))
     .mutation(async ({ ctx, input }) => {
-      return await new UserUpsertPostUseCase(ctx.db).execute({
+      const webRisk = new WebRisk();
+      return await new UserUpsertPostUseCase(ctx.db, webRisk).execute({
         userId: ctx.session.user.id,
         ...input,
       });

@@ -136,3 +136,14 @@ model Moderation {
 
     createdAt DateTime @default(now())
 }
+
+model WebRishAnalysis {
+    id String @id @default(cuid())
+
+    url String @unique
+
+    isSafe     Boolean
+    threatTypes String[]
+
+    inspectedAt DateTime @default(now())
+}

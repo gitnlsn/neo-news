@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
+import { mockedWebRisk } from "~/resources/web-risk/mocked-web-risk";
 import { UserUpsertProfileUseCase } from "./user-upsert-profile";
 
 import { PrismaClient } from "@prisma/client";
@@ -9,7 +10,10 @@ describe("User Upsert Profile", () => {
   const fakeFactory = new FakeFactory(prisma);
 
   it("should create user profile", async () => {
-    const userUpsertProfile = new UserUpsertProfileUseCase(prisma);
+    const userUpsertProfile = new UserUpsertProfileUseCase(
+      prisma,
+      mockedWebRisk,
+    );
     // Tests here
 
     const user = await fakeFactory.createUser();
@@ -27,7 +31,10 @@ describe("User Upsert Profile", () => {
   });
 
   it("should update user profile", async () => {
-    const userUpsertProfile = new UserUpsertProfileUseCase(prisma);
+    const userUpsertProfile = new UserUpsertProfileUseCase(
+      prisma,
+      mockedWebRisk,
+    );
     // Tests here
 
     const user = await fakeFactory.createUser();
@@ -45,7 +52,10 @@ describe("User Upsert Profile", () => {
   });
 
   it("should not update deleted profile", async () => {
-    const userUpsertProfile = new UserUpsertProfileUseCase(prisma);
+    const userUpsertProfile = new UserUpsertProfileUseCase(
+      prisma,
+      mockedWebRisk,
+    );
     // Tests here
 
     const user = await fakeFactory.createUser();

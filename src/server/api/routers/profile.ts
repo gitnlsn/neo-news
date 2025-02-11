@@ -1,9 +1,9 @@
+import { WebRisk } from "~/resources/web-risk";
 import { UserDeleteProfileUseCase } from "~/use-cases/user-delete-profile";
 import { UserPaginateProfilesUseCase } from "~/use-cases/user-paginate-profiles";
 import { UserShowProfileUseCase } from "~/use-cases/user-show-profile";
 import { UserUpsertProfileUseCase } from "~/use-cases/user-upsert-profile";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-
 export const profileRouter = createTRPCRouter({
   paginate: protectedProcedure
     .input(UserPaginateProfilesUseCase.inputSchema.omit({ userId: true }))
@@ -26,7 +26,8 @@ export const profileRouter = createTRPCRouter({
   upsert: protectedProcedure
     .input(UserUpsertProfileUseCase.inputSchema.omit({ userId: true }))
     .mutation(async ({ input, ctx }) => {
-      return await new UserUpsertProfileUseCase(ctx.db).execute({
+      const webRisk = new WebRisk();
+      return await new UserUpsertProfileUseCase(ctx.db, webRisk).execute({
         ...input,
         userId: ctx.session.user.id,
       });

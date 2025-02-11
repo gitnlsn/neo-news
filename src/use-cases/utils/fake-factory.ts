@@ -159,4 +159,16 @@ export class FakeFactory {
       },
     });
   }
+
+  async createWebRiskAnalysis(
+    data?: Partial<Prisma.WebRishAnalysisCreateInput>,
+  ) {
+    return this.prisma.webRishAnalysis.create({
+      data: {
+        url: data?.url ?? `https://${randomUUID()}.com`,
+        isSafe: data?.isSafe ?? false,
+        threatTypes: data?.threatTypes ?? [faker.lorem.word()],
+      },
+    });
+  }
 }

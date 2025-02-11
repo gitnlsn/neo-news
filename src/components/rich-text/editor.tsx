@@ -14,12 +14,14 @@ import TextAlign from "@tiptap/extension-text-align";
 import Youtube from "@tiptap/extension-youtube";
 
 import type { File as UploadedFile } from "@prisma/client";
+import Link from "@tiptap/extension-link";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { RichTextAddImageButton } from "./add-image-button";
 import { RichTextAddYoutubeVideoButton } from "./add-youtube-video";
 import { RichTextAlignment } from "./alignment";
 import { RichTextContainer } from "./container";
 import { RichTextHeadings } from "./headings";
+import { RichTextLinkButton } from "./link-button";
 import { RichTextLists } from "./lists";
 import { RichTextSeparator } from "./separator";
 import { TextMarksMenu } from "./text-marks-menu";
@@ -56,6 +58,46 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, EditorProps>(
         TextAlign.configure({ types: ["heading", "paragraph"] }),
         Image,
         Youtube,
+        Link.configure({
+          openOnClick: true,
+          autolink: true,
+          defaultProtocol: "https",
+          protocols: ["https"],
+          isAllowedUri: (url, ctx) => {
+            try {
+              // construct URL
+              const parsedUrl = url.includes(":")
+                ? new URL(url)
+                : new URL(`${ctx.defaultProtocol}://${url}`);
+
+              // use default validation
+              if (!ctx.defaultValidate(parsedUrl.href)) {
+                return false;
+              }
+
+              // disallowed protocols
+              const protocol = parsedUrl.protocol.replace(":", "");
+
+              if (protocol !== "https") {
+                return false;
+              }
+
+              // only allow protocols specified in ctx.protocols
+              const allowedProtocols = ctx.protocols.map((p) =>
+                typeof p === "string" ? p : p.scheme,
+              );
+
+              if (!allowedProtocols.includes(protocol)) {
+                return false;
+              }
+
+              // all checks have passed
+              return true;
+            } catch {
+              return false;
+            }
+          },
+        }),
       ],
       editorProps: {
         attributes: {
@@ -87,6 +129,8 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, EditorProps>(
         <RichTextAlignment editor={editor} />
         <RichTextSeparator />
         <RichTextLists editor={editor} />
+        <RichTextSeparator />
+        <RichTextLinkButton editor={editor} />
       </>
     );
 

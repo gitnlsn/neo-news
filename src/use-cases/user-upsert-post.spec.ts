@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 import { UserUpsertPostUseCase } from "./user-upsert-post";
 
 import { PrismaClient } from "@prisma/client";
+import { mockedWebRisk } from "~/resources/web-risk/mocked-web-risk";
 import { FakeFactory } from "./utils/fake-factory";
-
 describe("User Upsert Post", () => {
   const prisma = new PrismaClient();
   const fakeFactory = new FakeFactory(prisma);
 
   it("should create post", async () => {
-    const userUpsertPost = new UserUpsertPostUseCase(prisma);
+    const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
     // Tests here
 
     const user = await fakeFactory.createUser();
@@ -30,7 +30,7 @@ describe("User Upsert Post", () => {
   });
 
   it("should update post", async () => {
-    const userUpsertPost = new UserUpsertPostUseCase(prisma);
+    const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
     // Tests here
 
     const user = await fakeFactory.createUser();
@@ -58,7 +58,7 @@ describe("User Upsert Post", () => {
   });
 
   it("should include images in post", async () => {
-    const userUpsertPost = new UserUpsertPostUseCase(prisma);
+    const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
     // Tests here
 
     const user = await fakeFactory.createUser();
@@ -81,7 +81,7 @@ describe("User Upsert Post", () => {
 
   describe("exceptions", () => {
     it("should not update profile from another user", async () => {
-      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
       // Tests here
 
       const user = await fakeFactory.createUser();
@@ -103,7 +103,7 @@ describe("User Upsert Post", () => {
     });
 
     it("should not update deleted post", async () => {
-      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
       // Tests here
 
       const user = await fakeFactory.createUser();
@@ -127,7 +127,7 @@ describe("User Upsert Post", () => {
     });
 
     it("should return error when create post with same slug", async () => {
-      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
       // Tests here
 
       const user = await fakeFactory.createUser();
@@ -157,7 +157,7 @@ describe("User Upsert Post", () => {
     });
 
     it("should return error when create post with same slug", async () => {
-      const userUpsertPost = new UserUpsertPostUseCase(prisma);
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
       // Tests here
 
       const user1 = await fakeFactory.createUser();

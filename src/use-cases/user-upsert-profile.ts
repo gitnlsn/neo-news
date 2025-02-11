@@ -4,7 +4,9 @@ import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 import type { File as UploadedFile } from "@prisma/client";
+import type { WebRisk } from "~/resources/web-risk";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
+import { SystemSanitizeHtmlUseCase } from "./system-sanitize-html";
 
 const inputSchema = z.object({
   userId: z.string().cuid(),
@@ -21,7 +23,10 @@ export type UserUpsertProfileInput = z.infer<typeof inputSchema>;
 export class UserUpsertProfileUseCase {
   private input: UserUpsertProfileInput | null = null;
 
-  constructor(private readonly database: PrismaClient) {}
+  constructor(
+    private readonly database: PrismaClient,
+    private readonly webRisk: WebRisk,
+  ) {}
 
   static get inputSchema() {
     return inputSchema;
@@ -44,8 +49,12 @@ export class UserUpsertProfileUseCase {
   }) {
     const { description, uploadedImages } = props;
 
-    const urls = getUrlsFromHtml(description);
-    return uploadedImages.filter((image) => urls.includes(image.url));
+    const urls = getUrlsFromHtml(description).map((url) =>
+      url.replace(/\/$/, ""),
+    );
+    return uploadedImages.filter((image) =>
+      urls.includes(image.url.replace(/\/$/, "")),
+    );
   }
 
   async execute(input: UserUpsertProfileInput) {
@@ -55,19 +64,28 @@ export class UserUpsertProfileUseCase {
     const { userId, title, description, logo, images, profileId } =
       validatedInput;
 
+    const systemSanitizeHtmlUseCase = new SystemSanitizeHtmlUseCase(
+      this.database,
+      this.webRisk,
+    );
+
+    const sanitizedDescription = await systemSanitizeHtmlUseCase.execute({
+      html: description,
+    });
+
     if (!profileId) {
       return await this.database.profile.create({
         data: {
           userId,
           title,
-          description,
+          description: sanitizedDescription,
           logo: {
             connect: logo ? { id: logo.id } : undefined,
           },
           images: {
             connect: images
               ? this.filterUsedImages({
-                  description,
+                  description: sanitizedDescription,
                   uploadedImages: images,
                 }).map((image) => ({ id: image.id }))
               : undefined,
@@ -101,14 +119,14 @@ export class UserUpsertProfileUseCase {
       where: { id: existingProfile.id },
       data: {
         title,
-        description,
+        description: sanitizedDescription,
         logo: {
           connect: logo ? { id: logo.id } : undefined,
         },
         images: {
           connect: images
             ? this.filterUsedImages({
-                description,
+                description: sanitizedDescription,
                 uploadedImages: images,
               }).map((image) => ({ id: image.id }))
             : undefined,

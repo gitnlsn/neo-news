@@ -1,8 +1,8 @@
 import type { ButtonHTMLAttributes } from "react";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button, type ButtonProps } from "../ui/button";
 
-interface RichTextButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface RichTextButtonProps extends ButtonProps {
   isActive?: boolean;
 }
 
