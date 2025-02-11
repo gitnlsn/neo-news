@@ -61,12 +61,13 @@ export default function ProfileForm() {
   });
 
   const upsertProfileMutation = api.post.upsert.useMutation();
+
+  const listProfiles = api.profile.paginate.useQuery({});
+
   const showPost = api.post.show.useQuery(
     { postId },
     { enabled: !!postId, refetchOnWindowFocus: false },
   );
-
-  const listProfiles = api.profile.paginate.useQuery({});
 
   const breadcrumbItems = showPost.data
     ? [
