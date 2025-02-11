@@ -1,12 +1,10 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { PrismaClient } from "@prisma/client";
-import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest, NextResponse } from "next/server";
 import { env } from "~/env";
 import type { R2UploadResponse } from "~/schemas/api/R2UploadResponse";
 import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 import { upload } from "~/use-cases/upload";
-import { parseFile } from "~/utils/api/parseFile";
 
 export const POST = async (
   req: NextRequest,
@@ -48,11 +46,9 @@ export const POST = async (
       endpoint: `https://${env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
     });
 
-    const prisma = new PrismaClient();
-
     const image = await upload({
       file,
-      prisma,
+      prisma: db,
       s3Client,
     });
 

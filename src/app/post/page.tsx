@@ -1,8 +1,4 @@
-import {
-  type Post,
-  PrismaClient,
-  type File as UploadedFile,
-} from "@prisma/client";
+import type { Post } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { db } from "~/server/db";
 import { filterImagesAndVideosFromHtml } from "~/utils/use-cases/filter-images-and-videos-from-html";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
 
@@ -22,9 +19,7 @@ type PagePost = Post & {
 
 // Função para buscar os posts (simulada)
 async function getPosts(): Promise<PagePost[]> {
-  const prisma = new PrismaClient();
-
-  const posts = await prisma.post.findMany({
+  const posts = await db.post.findMany({
     where: {
       isPublished: true,
       deletedAt: null,

@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import keywordExtractor from "keyword-extractor";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -6,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
 import { env } from "~/env";
+import { db } from "~/server/db";
 import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
 
 interface Params {
@@ -13,8 +13,7 @@ interface Params {
 }
 
 export async function generateStaticParams(): Promise<Params[]> {
-  const prisma = new PrismaClient();
-  const profiles = await prisma.profile.findMany({
+  const profiles = await db.profile.findMany({
     select: {
       id: true,
     },
@@ -41,9 +40,7 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 export const getProfile = async (props: Params) => {
-  const prisma = new PrismaClient();
-
-  const profile = await prisma.profile.findUniqueOrThrow({
+  const profile = await db.profile.findUniqueOrThrow({
     where: {
       id: props.id,
     },

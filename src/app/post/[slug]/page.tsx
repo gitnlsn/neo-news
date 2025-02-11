@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import keywordExtractor from "keyword-extractor";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -6,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
 import { env } from "~/env";
+import { db } from "~/server/db";
 import dayjs from "~/utils/date/dayjs";
 import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
 import { getVideoUrlsFromHtml } from "~/utils/use-cases/get-video-urls-from-html";
@@ -15,8 +15,7 @@ interface Params {
 }
 
 export async function generateStaticParams(): Promise<Params[]> {
-  const prisma = new PrismaClient();
-  const posts = await prisma.post.findMany({
+  const posts = await db.post.findMany({
     select: {
       slug: true,
     },
@@ -39,9 +38,7 @@ export async function generateStaticParams(): Promise<Params[]> {
 }
 
 export const getPost = async (props: Params) => {
-  const prisma = new PrismaClient();
-
-  const post = await prisma.post.findUniqueOrThrow({
+  const post = await db.post.findUniqueOrThrow({
     where: {
       slug: props.slug,
     },

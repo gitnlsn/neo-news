@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
 import { env } from "~/env";
+import { db } from "~/server/db";
 import { FakeFactory } from "~/use-cases/utils/fake-factory";
 
 export const seed = async () => {
@@ -8,9 +8,7 @@ export const seed = async () => {
     throw new Error("Don't run seed in production");
   }
 
-  const prisma = new PrismaClient();
-
-  const fakeFactory = new FakeFactory(prisma);
+  const fakeFactory = new FakeFactory(db);
 
   const users = await Promise.all([
     fakeFactory.createUser(),

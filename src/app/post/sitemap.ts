@@ -1,12 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import type { MetadataRoute } from "next";
 import { env } from "~/env";
+import { db } from "~/server/db";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Google's limit is 50,000 URLs per sitemap
-  const prisma = new PrismaClient();
-  const posts = await prisma.post.findMany({
+  const posts = await db.post.findMany({
     select: {
       slug: true,
       updatedAt: true,
