@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,6 +32,7 @@ interface RichTextLinkButtonProps {
 
 const schema = z.object({
   url: z.string().url({ message: "URL inválida" }),
+  classButton: z.boolean().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -41,6 +44,7 @@ export const RichTextLinkButton = ({ editor }: RichTextLinkButtonProps) => {
     resolver: zodResolver(schema),
     defaultValues: {
       url: "",
+      classButton: false,
     },
   });
 
@@ -67,7 +71,10 @@ export const RichTextLinkButton = ({ editor }: RichTextLinkButtonProps) => {
         .chain()
         .focus()
         .extendMarkRange("link")
-        .setLink({ href: data.url })
+        .setLink({
+          href: data.url,
+          class: data.classButton ? "as-button" : undefined,
+        })
         .run();
       form.reset();
       setOpen(false);
@@ -120,6 +127,28 @@ export const RichTextLinkButton = ({ editor }: RichTextLinkButtonProps) => {
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="classButton"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Call to action</FormLabel>
+                      <FormDescription>
+                        Escolhendo essa opção, o link será exibido como um botão
+                        clicável.
+                      </FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />

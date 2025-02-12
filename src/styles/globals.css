@@ -85,6 +85,10 @@
   @apply cursor-pointer text-blue-500;
 }
 
+.tiptap a.as-button {
+  @apply mx-auto block w-fit cursor-pointer rounded-md bg-primary p-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+}
+
 .tiptap p {
   @apply block min-h-6;
 }
