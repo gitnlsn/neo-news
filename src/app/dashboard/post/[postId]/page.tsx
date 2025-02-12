@@ -182,7 +182,7 @@ export default function ProfileForm() {
             name="tags"
             render={({ field }) => (
               <FormItem className="sm:col-span-12">
-                <FormLabel>Tags</FormLabel>
+                <FormLabel>Paravras chaves</FormLabel>
                 <FormControl>
                   <TagsInput
                     placeholder="Digite uma tag e pressione Enter"
@@ -191,8 +191,9 @@ export default function ProfileForm() {
                   />
                 </FormControl>
                 <FormDescription>
-                  Adicione tags para categorizar seu post. Pressione Enter para
-                  adicionar cada tag.
+                  Adicione palavras chaves para categorizar seu post. Essas
+                  palavras chaves serão usadas para melhorar a busca do post no
+                  Google.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
