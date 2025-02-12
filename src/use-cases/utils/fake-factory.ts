@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { faker } from "@faker-js/faker";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import slugify from "slugify";
+import type { UserCreateComplaintInput } from "../user-create-complaint";
 
 export class FakeFactory {
   constructor(private readonly prisma: PrismaClient) {}
@@ -168,6 +169,15 @@ export class FakeFactory {
         url: data?.url ?? `https://${randomUUID()}.com`,
         isSafe: data?.isSafe ?? false,
         threatTypes: data?.threatTypes ?? [faker.lorem.word()],
+      },
+    });
+  }
+
+  async createComplaint(data?: Partial<UserCreateComplaintInput>) {
+    return this.prisma.complaint.create({
+      data: {
+        ...data,
+        description: data?.description ?? faker.lorem.sentence(),
       },
     });
   }

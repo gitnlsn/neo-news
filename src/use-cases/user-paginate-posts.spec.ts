@@ -26,8 +26,8 @@ describe("User Paginate Posts", () => {
     expect(posts.length).toBe(2);
     expect(total).toBe(2);
 
-    expect(posts[0]?.id).toBe(post1.id);
-    expect(posts[1]?.id).toBe(post2.id);
+    expect(posts[0]?.id).toBe(post2.id);
+    expect(posts[1]?.id).toBe(post1.id);
   });
 
   it("should paginate posts", async () => {
@@ -50,7 +50,7 @@ describe("User Paginate Posts", () => {
     expect(posts.length).toBe(1);
     expect(total).toBe(2);
 
-    expect(posts[0]?.id).toBe(post1.id);
+    expect(posts[0]?.id).toBe(post2.id);
   });
 
   it("should filter posts by title", async () => {

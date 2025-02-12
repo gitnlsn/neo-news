@@ -25,8 +25,8 @@ describe("User Paginate Profiles", () => {
     expect(profiles.length).toBe(2);
     expect(total).toBe(2);
 
-    expect(profiles[0]?.id).toBe(profile1.id);
-    expect(profiles[1]?.id).toBe(profile2.id);
+    expect(profiles[0]?.id).toBe(profile2.id);
+    expect(profiles[1]?.id).toBe(profile1.id);
   });
 
   it("should paginate profiles", async () => {
@@ -48,7 +48,7 @@ describe("User Paginate Profiles", () => {
     expect(profiles.length).toBe(1);
     expect(total).toBe(2);
 
-    expect(profiles[0]?.id).toBe(profile1.id);
+    expect(profiles[0]?.id).toBe(profile2.id);
   });
 
   it("should filter profiles by title", async () => {

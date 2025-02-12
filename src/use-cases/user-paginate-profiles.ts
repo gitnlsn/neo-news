@@ -54,6 +54,10 @@ export class UserPaginateProfilesUseCase {
       this.database.profile.findMany({
         where,
 
+        orderBy: {
+          createdAt: "desc",
+        },
+
         ...buildPaginationTakeSkip({ page, perPage }),
       }),
       this.database.profile.count({

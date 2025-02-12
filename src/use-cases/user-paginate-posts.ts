@@ -60,6 +60,10 @@ export class UserPaginatePostsUseCase {
       this.database.post.findMany({
         where,
 
+        orderBy: {
+          createdAt: "desc",
+        },
+
         ...buildPaginationTakeSkip({ page, perPage }),
 
         include: {

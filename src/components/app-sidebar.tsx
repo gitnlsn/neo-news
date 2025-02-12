@@ -1,4 +1,4 @@
-import { FileText, Home, User } from "lucide-react";
+import { AlertTriangle, FileText, Home, User } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -25,6 +25,11 @@ const menuItems = [
     title: "Meus posts",
     url: "/dashboard/post",
     icon: FileText,
+  },
+  {
+    title: "Reclamações",
+    url: "/dashboard/complaint",
+    icon: AlertTriangle,
   },
 ];
 
