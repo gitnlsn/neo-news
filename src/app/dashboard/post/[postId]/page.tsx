@@ -86,7 +86,7 @@ export default function ProfileForm() {
       ];
 
   useEffect(() => {
-    if (showPost.data) {
+    if (showPost.data && listProfiles.data) {
       form.reset({
         postId: showPost.data.id,
 
@@ -99,7 +99,7 @@ export default function ProfileForm() {
 
       richTextEditorRef.current?.setContent(showPost.data.content);
     }
-  }, [showPost.data, form]);
+  }, [showPost.data, listProfiles.data, form]);
 
   const onSubmit = async (data: z.infer<typeof postSchema>) => {
     try {
