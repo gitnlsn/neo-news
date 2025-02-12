@@ -17,7 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
-import { SidebarTrigger } from "./sidebar";
+import { Sidebar, SidebarTrigger } from "./sidebar";
 
 export interface NavigationItem {
   title: string;
@@ -26,9 +26,13 @@ export interface NavigationItem {
 
 interface PageHeaderProps {
   breadcrumbItems: NavigationItem[];
+  rightSidebarTrigger?: boolean;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ breadcrumbItems }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({
+  breadcrumbItems,
+  rightSidebarTrigger,
+}) => {
   const { data } = useSession();
 
   return (
@@ -61,6 +65,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({ breadcrumbItems }) => {
           <DropdownMenuItem onClick={() => signOut()}>Log Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {rightSidebarTrigger && <SidebarTrigger side="right" />}
     </Container>
   );
 };

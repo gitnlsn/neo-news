@@ -31,7 +31,7 @@ const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
-type SidebarContext = {
+type SidebarContextProps = {
   state: "expanded" | "collapsed";
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -41,10 +41,17 @@ type SidebarContext = {
   toggleSidebar: () => void;
 };
 
-const SidebarContext = React.createContext<SidebarContext | null>(null);
+const LeftSidebarContext = React.createContext<SidebarContextProps | null>(
+  null,
+);
+const RightSidebarContext = React.createContext<SidebarContextProps | null>(
+  null,
+);
 
-function useSidebar() {
-  const context = React.useContext(SidebarContext);
+function useSidebar(props: { side: "left" | "right" }) {
+  const context = React.useContext(
+    props.side === "left" ? LeftSidebarContext : RightSidebarContext,
+  );
   if (!context) {
     throw new Error("useSidebar must be used within a SidebarProvider.");
   }
@@ -58,6 +65,7 @@ const SidebarProvider = React.forwardRef<
     defaultOpen?: boolean;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    side?: "left" | "right";
   }
 >(
   (
@@ -68,6 +76,7 @@ const SidebarProvider = React.forwardRef<
       className,
       style,
       children,
+      side = "left",
       ...props
     },
     ref,
@@ -121,7 +130,7 @@ const SidebarProvider = React.forwardRef<
     // This makes it easier to style the sidebar with Tailwind classes.
     const state = open ? "expanded" : "collapsed";
 
-    const contextValue = React.useMemo<SidebarContext>(
+    const contextValue = React.useMemo<SidebarContextProps>(
       () => ({
         state,
         open,
@@ -134,8 +143,10 @@ const SidebarProvider = React.forwardRef<
       [state, open, setOpen, isMobile, openMobile, toggleSidebar],
     );
 
+    const Context = side === "left" ? LeftSidebarContext : RightSidebarContext;
+
     return (
-      <SidebarContext.Provider value={contextValue}>
+      <Context.Provider value={contextValue}>
         <TooltipProvider delayDuration={0}>
           <div
             style={
@@ -155,7 +166,7 @@ const SidebarProvider = React.forwardRef<
             {children}
           </div>
         </TooltipProvider>
-      </SidebarContext.Provider>
+      </Context.Provider>
     );
   },
 );
@@ -180,7 +191,7 @@ const Sidebar = React.forwardRef<
     },
     ref,
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const { isMobile, state, openMobile, setOpenMobile } = useSidebar({ side });
 
     if (collapsible === "none") {
       return (
@@ -270,9 +281,9 @@ Sidebar.displayName = "Sidebar";
 
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  React.ComponentProps<typeof Button> & { side?: "left" | "right" }
+>(({ className, onClick, side = "left", ...props }, ref) => {
+  const { toggleSidebar } = useSidebar({ side });
 
   return (
     <Button
@@ -296,9 +307,9 @@ SidebarTrigger.displayName = "SidebarTrigger";
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button">
->(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  React.ComponentProps<"button"> & { side?: "left" | "right" }
+>(({ className, onClick, side = "left", ...props }, ref) => {
+  const { toggleSidebar } = useSidebar({ side });
 
   return (
     <button
@@ -548,6 +559,7 @@ const SidebarMenuButton = React.forwardRef<
     asChild?: boolean;
     isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+    side?: "left" | "right";
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -558,12 +570,13 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      side = "left",
       ...props
     },
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+    const { isMobile, state } = useSidebar({ side });
 
     const button = (
       <Comp

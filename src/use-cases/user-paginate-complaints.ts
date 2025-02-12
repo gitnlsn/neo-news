@@ -7,6 +7,9 @@ import { buildPaginationTakeSkip } from "~/utils/api/build-pagination-take-skip"
 const inputSchema = z.object({
   userId: z.string(),
 
+  postId: z.string().optional(),
+  profileId: z.string().optional(),
+
   page: z.number().optional(),
   perPage: z.number().optional(),
 });
@@ -37,13 +40,16 @@ export class UserPaginateComplaintsUseCase {
     const validatedInput = this.validateInput(input);
     // Logic here
 
-    const { userId, page, perPage } = validatedInput;
+    const { userId, page, perPage, postId, profileId } = validatedInput;
 
     const where: Prisma.ComplaintWhereInput = {
       OR: [
         { post: { profile: { userId: userId } } },
         { profile: { userId: userId } },
       ],
+
+      postId,
+      profileId,
     };
 
     const [complaints, total] = await Promise.all([

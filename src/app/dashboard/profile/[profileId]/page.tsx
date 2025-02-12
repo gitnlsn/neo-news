@@ -8,12 +8,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { ComplaintsPaginator } from "~/components/modules/sidebar/complaints-paginator";
 import { PrivateLayout } from "~/components/private-layout";
 import {
   RichTextEditor,
   type RichTextEditorRef,
 } from "~/components/rich-text/editor";
 import { Button } from "~/components/ui/button"; // Importar Button da pasta ui
+import { Container } from "~/components/ui/container";
 import {
   Form,
   FormControl,
@@ -26,6 +28,14 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input"; // Importar Input da pasta ui
 import PageHeader from "~/components/ui/page-header";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarProvider,
+} from "~/components/ui/sidebar";
 import { Typography } from "~/components/ui/typography";
 import { profileSchema } from "~/schemas/form-validation/profile";
 import { api } from "~/trpc/react";
@@ -123,86 +133,105 @@ export default function ProfileForm() {
 
   return (
     <PrivateLayout>
-      <PageHeader breadcrumbItems={breadcrumbItems} />
+      <SidebarProvider side="right" defaultOpen={profileId !== undefined}>
+        <Container className="px-0">
+          <PageHeader breadcrumbItems={breadcrumbItems} rightSidebarTrigger />
 
-      <Form {...form}>
-        <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
-          <Typography.H3 className="col-span-12">Perfil</Typography.H3>
+          <Form {...form}>
+            <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
+              <Typography.H3 className="col-span-12">Perfil</Typography.H3>
 
-          <FormField
-            control={form.control}
-            name="logo"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-12">
-                <FormLabel>Logo</FormLabel>
-                <FormControl>
-                  <Input type="file" onChange={handleLogoChange} />
-                </FormControl>
-                {field.value && (
-                  <img
-                    src={field.value.url}
-                    alt="Logo Preview"
-                    className="mt-2 max-h-[600px] max-w-[600px] w-full mx-auto"
-                  />
+              <FormField
+                control={form.control}
+                name="logo"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-12">
+                    <FormLabel>Logo</FormLabel>
+                    <FormControl>
+                      <Input type="file" onChange={handleLogoChange} />
+                    </FormControl>
+                    {field.value && (
+                      <img
+                        src={field.value.url}
+                        alt="Logo Preview"
+                        className="mt-2 max-h-[600px] max-w-[600px] w-full mx-auto"
+                      />
+                    )}
+                    <FormDescription>
+                      Esse será o logo do seu perfil.
+                    </FormDescription>
+                  </FormItem>
                 )}
-                <FormDescription>
-                  Esse será o logo do seu perfil.
-                </FormDescription>
-              </FormItem>
-            )}
-          />
+              />
 
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-12">
-                <FormLabel>Título</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Insira o título"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Esse será o título do seu perfil.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-12">
+                    <FormLabel>Título</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Insira o título"
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Esse será o título do seu perfil.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-12">
-                <FormLabel>Descrição</FormLabel>
-                <FormControl>
-                  <RichTextEditor
-                    ref={richTextEditorRef}
-                    onChange={field.onChange}
-                    onUploadImage={(file) => richTextFieldArray.append(file)}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Essa será a descrição do seu perfil.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-12">
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        ref={richTextEditorRef}
+                        onChange={field.onChange}
+                        onUploadImage={(file) =>
+                          richTextFieldArray.append(file)
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Essa será a descrição do seu perfil.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Button
-            type="submit"
-            className="col-span-12"
-            isLoading={upsertProfileMutation.isPending || showProfile.isLoading}
-          >
-            {profileId === undefined ? "Create Profile" : "Update Profile"}
-          </Button>
-        </FormWrapper>
-      </Form>
+              <Button
+                type="submit"
+                className="col-span-12"
+                isLoading={
+                  upsertProfileMutation.isPending || showProfile.isLoading
+                }
+              >
+                {profileId === undefined ? "Create Profile" : "Update Profile"}
+              </Button>
+            </FormWrapper>
+          </Form>
+        </Container>
+
+        <Sidebar side="right">
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Reclamações</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <ComplaintsPaginator profileId={profileId} />
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+      </SidebarProvider>
     </PrivateLayout>
   );
 }
