@@ -60,11 +60,11 @@ const TypographyH4 = ({ children, className }: Props) => {
 };
 
 const TypographyP = ({ children, className }: Props) => {
-  return (
-    <p className={cn("leading-7 [&:not(:first-child)]:mt-6", className)}>
-      {children}
-    </p>
-  );
+  return <p className={cn(className)}>{children}</p>;
+};
+
+const TypographySpan = ({ children, className }: Props) => {
+  return <span className={cn(className)}>{children}</span>;
 };
 
 const TypographyBlockquote = ({ children, className }: Props) => {
@@ -128,6 +128,7 @@ export const Typography = {
   H3: TypographyH3,
   H4: TypographyH4,
   P: TypographyP,
+  Span: TypographySpan,
   Blockquote: TypographyBlockquote,
   InlineCode: TypographyInlineCode,
   Lead: TypographyLead,

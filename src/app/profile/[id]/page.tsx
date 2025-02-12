@@ -1,7 +1,9 @@
 import keywordExtractor from "keyword-extractor";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Button } from "~/components/ui/button";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
 import { env } from "~/env";
@@ -136,6 +138,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         className="tiptap"
         dangerouslySetInnerHTML={{ __html: profile.description }}
       />
+
+      <div className="mt-10 flex justify-end">
+        <Button variant="outline" asChild>
+          <Link href={`/complaint/profile/${profile.id}`}>Reportar</Link>
+        </Button>
+      </div>
     </Container>
   );
 }

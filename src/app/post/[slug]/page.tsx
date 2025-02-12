@@ -2,6 +2,7 @@ import keywordExtractor from "keyword-extractor";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Button } from "~/components/ui/button";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
 import { env } from "~/env";
@@ -127,6 +128,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         className="tiptap"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
+
+      <div className="mt-10 flex justify-end">
+        <Button variant="outline" asChild>
+          <Link href={`/complaint/post/${post.slug}`}>Reportar</Link>
+        </Button>
+      </div>
     </Container>
   );
 }
