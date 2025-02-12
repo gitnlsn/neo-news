@@ -8,6 +8,10 @@ import type { UploadedFile } from "~/types/UploadedFile";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
 import { SystemSanitizeHtmlUseCase } from "./system-sanitize-html";
 
+const tagSchema = z.object({
+  name: z.string().min(1, "Tag name is required"),
+});
+
 const inputSchema = z.object({
   userId: z.string().cuid(),
   profileId: z.string().cuid(),
@@ -16,6 +20,7 @@ const inputSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   content: z.string().min(1, "Conteúdo é obrigatório"),
   images: z.array(z.custom<UploadedFile>()).optional(),
+  tags: z.array(tagSchema).optional(),
 
   isPublished: z.boolean().optional(),
 });
@@ -63,8 +68,16 @@ export class UserUpsertPostUseCase {
     const validatedInput = this.validateInput(input);
     // Logic here
 
-    const { userId, profileId, title, content, images, isPublished, postId } =
-      validatedInput;
+    const {
+      userId,
+      profileId,
+      title,
+      content,
+      images,
+      isPublished,
+      postId,
+      tags,
+    } = validatedInput;
 
     const existingProfile = await this.database.profile.findFirst({
       where: {
@@ -90,6 +103,17 @@ export class UserUpsertPostUseCase {
     const sanitizedContent = await systemSanitizeHtmlUseCase.execute({
       html: content,
     });
+
+    // Prepare tag connections
+    const tagConnections =
+      tags && tags.length > 0
+        ? {
+            connectOrCreate: tags.map((tag) => ({
+              where: { name: tag.name },
+              create: { name: tag.name },
+            })),
+          }
+        : undefined;
 
     if (!postId) {
       const existingPostWithSameSlug = await this.database.post.findUnique({
@@ -125,10 +149,12 @@ export class UserUpsertPostUseCase {
                   }).map((image) => ({ id: image.id }))
                 : undefined,
           },
+          tags: tagConnections,
         },
 
         include: {
           images: true,
+          tags: true,
         },
       });
     }
@@ -142,6 +168,9 @@ export class UserUpsertPostUseCase {
         profileId: existingProfile.id,
 
         deletedAt: null,
+      },
+      include: {
+        tags: true,
       },
     });
 
@@ -186,10 +215,14 @@ export class UserUpsertPostUseCase {
                 }).map((image) => ({ id: image.id }))
               : undefined,
         },
+        tags: {
+          set: [], // First disconnect all existing tags
+          ...tagConnections, // Then connect new ones
+        },
       },
-
       include: {
         images: true,
+        tags: true,
       },
     });
   }

@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { TagsInput } from "~/components/ui/tags-input";
 import { Typography } from "~/components/ui/typography";
 import { postSchema } from "~/schemas/form-validation/post";
 import { api } from "~/trpc/react";
@@ -52,6 +53,7 @@ export default function ProfileForm() {
       title: "",
       content: "",
       images: [],
+      tags: [],
     },
   });
 
@@ -92,6 +94,7 @@ export default function ProfileForm() {
         title: showPost.data.title,
         content: showPost.data.content,
         images: showPost.data.images,
+        tags: showPost.data.tags ?? [],
       });
 
       richTextEditorRef.current?.setContent(showPost.data.content);
@@ -168,6 +171,28 @@ export default function ProfileForm() {
                 </FormControl>
                 <FormDescription>
                   Esse será o título do seu post.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem className="sm:col-span-12">
+                <FormLabel>Tags</FormLabel>
+                <FormControl>
+                  <TagsInput
+                    placeholder="Digite uma tag e pressione Enter"
+                    tags={field.value ?? []}
+                    onTagsChange={field.onChange}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Adicione tags para categorizar seu post. Pressione Enter para
+                  adicionar cada tag.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

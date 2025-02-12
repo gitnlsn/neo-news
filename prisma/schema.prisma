@@ -91,6 +91,7 @@ model Post {
     content String @db.Text
 
     images File[]
+    tags   PostTag[]
 
     isPublished Boolean @default(false)
 
@@ -146,4 +147,15 @@ model WebRishAnalysis {
     threatTypes String[]
 
     inspectedAt DateTime @default(now())
+}
+
+model PostTag {
+    id   String @id @default(cuid())
+    name String @unique
+
+    posts Post[]
+
+    createdAt DateTime @default(now())
+
+    @@index([name])
 }

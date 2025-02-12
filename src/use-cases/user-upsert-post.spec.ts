@@ -5,6 +5,7 @@ import { UserUpsertPostUseCase } from "./user-upsert-post";
 import { PrismaClient } from "@prisma/client";
 import { mockedWebRisk } from "~/resources/web-risk/mocked-web-risk";
 import { FakeFactory } from "./utils/fake-factory";
+
 describe("User Upsert Post", () => {
   const prisma = new PrismaClient();
   const fakeFactory = new FakeFactory(prisma);
@@ -77,6 +78,132 @@ describe("User Upsert Post", () => {
 
     expect(post.images).toHaveLength(1);
     expect(post.images[0]?.id).toBe(image.id);
+  });
+
+  describe("tags", () => {
+    it("should create post with tags", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
+
+      const user = await fakeFactory.createUser();
+      const profile = await fakeFactory.createProfile({ userId: user.id });
+
+      const title = await fakeFactory.generateTitleForUniqueSlug();
+      const post = await userUpsertPost.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title,
+        content: "post content",
+        tags: [{ name: "tag1" }, { name: "tag2" }],
+      });
+
+      expect(post.tags).toHaveLength(2);
+      expect(post.tags.map((tag) => tag.name)).toContain("tag1");
+      expect(post.tags.map((tag) => tag.name)).toContain("tag2");
+    });
+
+    it("should update post tags", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
+
+      const user = await fakeFactory.createUser();
+      const profile = await fakeFactory.createProfile({ userId: user.id });
+
+      const title = await fakeFactory.generateTitleForUniqueSlug();
+      const post = await userUpsertPost.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title,
+        content: "post content",
+        tags: [{ name: "tag1" }, { name: "tag2" }],
+      });
+
+      const updatedPost = await userUpsertPost.execute({
+        postId: post.id,
+        userId: user.id,
+        profileId: profile.id,
+        title,
+        content: "post content",
+        tags: [{ name: "tag2" }, { name: "tag3" }],
+      });
+
+      expect(updatedPost.tags).toHaveLength(2);
+      expect(updatedPost.tags.map((tag) => tag.name)).not.toContain("tag1");
+      expect(updatedPost.tags.map((tag) => tag.name)).toContain("tag2");
+      expect(updatedPost.tags.map((tag) => tag.name)).toContain("tag3");
+    });
+
+    it("should reuse existing tags", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
+
+      const user = await fakeFactory.createUser();
+      const profile = await fakeFactory.createProfile({ userId: user.id });
+
+      // Create first post with tag1
+      const title1 = await fakeFactory.generateTitleForUniqueSlug();
+      await userUpsertPost.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title: title1,
+        content: "post content",
+        tags: [{ name: "tag1" }],
+      });
+
+      // Create second post with same tag
+      const title2 = await fakeFactory.generateTitleForUniqueSlug();
+      const post2 = await userUpsertPost.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title: title2,
+        content: "post content",
+        tags: [{ name: "tag1" }],
+      });
+
+      // Get all tags from database
+      const allTags = await prisma.postTag.findMany({
+        where: { name: "tag1" },
+      });
+
+      // Should have only one tag in database
+      expect(allTags).toHaveLength(1);
+      expect(post2.tags).toHaveLength(1);
+      expect(post2.tags[0]?.name).toBe("tag1");
+    });
+
+    it("should remove all tags from post", async () => {
+      const userUpsertPost = new UserUpsertPostUseCase(prisma, mockedWebRisk);
+
+      const user = await fakeFactory.createUser();
+      const profile = await fakeFactory.createProfile({ userId: user.id });
+
+      const title = await fakeFactory.generateTitleForUniqueSlug();
+      const post = await userUpsertPost.execute({
+        userId: user.id,
+        profileId: profile.id,
+        title,
+        content: "post content",
+        tags: [{ name: "tag1" }, { name: "tag2" }],
+      });
+
+      const updatedPost = await userUpsertPost.execute({
+        postId: post.id,
+        userId: user.id,
+        profileId: profile.id,
+        title,
+        content: "post content",
+        tags: [], // Remove all tags
+      });
+
+      expect(updatedPost.tags).toHaveLength(0);
+
+      // Original tags should still exist in database
+      const existingTags = await prisma.postTag.findMany({
+        where: {
+          name: {
+            in: ["tag1", "tag2"],
+          },
+        },
+      });
+      expect(existingTags).toHaveLength(2);
+    });
   });
 
   describe("exceptions", () => {

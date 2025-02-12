@@ -48,6 +48,7 @@ export class UserShowPostUseCase {
 
       include: {
         images: true,
+        tags: true,
       },
     });
   }

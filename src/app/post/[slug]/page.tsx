@@ -44,6 +44,7 @@ export const getPost = async (props: Params) => {
     },
     include: {
       images: true,
+      tags: true,
       profile: {
         include: { logo: true, user: { select: { id: true, email: true } } },
       },
@@ -64,13 +65,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const description = fullDescription.slice(0, 512);
 
-  const keywords = keywordExtractor
+  const extractedKeywords = keywordExtractor
     .extract(fullDescription, {
       language: "portuguese",
       remove_duplicates: true,
       remove_digits: true,
     })
     .slice(0, 128);
+
+  const tagKeywords = post.tags.map((tag) => tag.name);
+  const keywords = [...new Set([...tagKeywords, ...extractedKeywords])];
 
   return {
     title: post.title,
