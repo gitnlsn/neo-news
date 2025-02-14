@@ -5,6 +5,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { set, type z } from "zod";
 
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +16,13 @@ import {
   type RichTextEditorRef,
 } from "~/components/rich-text/editor";
 import { Button } from "~/components/ui/button"; // Importar Button da pasta ui
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Container } from "~/components/ui/container";
 import {
   Form,
@@ -138,35 +146,63 @@ export default function ProfileForm() {
 
           <Form {...form}>
             <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
-              <Typography.H3 className="col-span-12">Post</Typography.H3>
+              <Typography.H3 className="col-span-12">
+                {postId ? "Atualizar" : "Criar"} Post
+              </Typography.H3>
 
-              <FormField
-                control={form.control}
-                name="profileId"
-                render={({ field }) => (
-                  <FormItem className="sm:col-span-12">
-                    <FormLabel>Perfil</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um perfil" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {listProfiles.data?.profiles.map((profile) => (
-                          <SelectItem key={profile.id} value={profile.id}>
-                            {profile.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Esse será o perfil dentro do qual você publicará seu post.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {listProfiles.data?.total === 0 && (
+                <Card className="col-span-12 border-yellow-600 bg-yellow-100">
+                  <CardHeader>
+                    <CardTitle>Você ainda não tem nenhum perfil</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Typography.P>
+                      O perfil é necessário pois você vai vincular o perfil ao
+                      post. Para criar um novo perfil, clique no botão abaixo.
+                    </Typography.P>
+                  </CardContent>
+
+                  <CardFooter>
+                    <Button variant="outline" type="button">
+                      <Link href="/dashboard/profile/create">Criar Perfil</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              )}
+
+              {listProfiles.data && listProfiles.data?.profiles.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name="profileId"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-12">
+                      <FormLabel>Perfil</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um perfil" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {listProfiles.data?.profiles.map((profile) => (
+                            <SelectItem key={profile.id} value={profile.id}>
+                              {profile.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Esse será o perfil dentro do qual você publicará seu
+                        post.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}

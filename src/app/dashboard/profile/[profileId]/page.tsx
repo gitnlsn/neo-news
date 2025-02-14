@@ -139,7 +139,9 @@ export default function ProfileForm() {
 
           <Form {...form}>
             <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
-              <Typography.H3 className="col-span-12">Perfil</Typography.H3>
+              <Typography.H3 className="col-span-12">
+                {profileId ? "Atualizar" : "Criar"} Perfil
+              </Typography.H3>
 
               <FormField
                 control={form.control}
