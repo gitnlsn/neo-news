@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   return posts.map((post) => ({
-    url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}/post/${post.slug}`,
+    url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}post/${post.slug}`,
     images: getUrlsFromHtml(post.content).map((image) =>
       image.replace(/&/g, "&amp;"),
     ),

@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   return profiles.map((profile) => ({
-    url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}/profile/${profile.id}`,
+    url: `${env.NEXT_PUBLIC_APP_PUBLIC_URL}profile/${profile.id}`,
     images: profile.logo?.url ? [profile.logo.url.replace(/&/g, "&amp;")] : [],
     lastModified: profile.updatedAt,
   }));
