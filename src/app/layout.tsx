@@ -3,7 +3,7 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { SessionProvider } from "next-auth/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
@@ -30,7 +30,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
+      <GoogleAnalytics gaId={env.GOOGLE_ANALYTICS_ID} />
       <GoogleTagManager gtmId={env.GOOGLE_TAG_MANAGER_ID} />
+
       <body>
         <Suspense fallback={<div>Loading...</div>}>
           <SessionProvider>
