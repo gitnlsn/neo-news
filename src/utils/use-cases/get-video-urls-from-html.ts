@@ -6,6 +6,7 @@ export const getVideoUrlsFromHtml = (html: string): string[] => {
     'iframe[src*="youtube.com/embed"]',
   );
   const urls = Array.from(iframes)
+    // @ts-expect-error - jsdom missing types
     .map((iframe) => iframe.getAttribute("src") || "")
     .filter(Boolean);
   return urls;

@@ -18,6 +18,8 @@ export const env = createEnv({
     WEB_RISK_API_KEY: z.string(),
     GEMINI_API_KEY: z.string(),
 
+    GOOGLE_TAG_MANAGER_ID: z.string(),
+
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
 
@@ -52,6 +54,8 @@ export const env = createEnv({
 
     APP_PUBLIC_URL: process.env.NEXT_PUBLIC_APP_PUBLIC_URL,
     NEXT_PUBLIC_APP_PUBLIC_URL: process.env.NEXT_PUBLIC_APP_PUBLIC_URL,
+
+    GOOGLE_TAG_MANAGER_ID: process.env.GOOGLE_TAG_MANAGER_ID,
 
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
