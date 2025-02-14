@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Editor } from "@tiptap/react";
+import { LinkIcon, UnlinkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -93,7 +94,9 @@ export const RichTextLinkButton = ({ editor }: RichTextLinkButtonProps) => {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild className="-mt-[2px]">
-          <RichTextButton>Link</RichTextButton>
+          <RichTextButton>
+            <LinkIcon />
+          </RichTextButton>
         </DialogTrigger>
 
         <DialogContent>
@@ -169,7 +172,7 @@ export const RichTextLinkButton = ({ editor }: RichTextLinkButtonProps) => {
         onClick={handleUnlink}
         disabled={!editor.isActive("link")}
       >
-        Unlink
+        <UnlinkIcon />
       </RichTextButton>
     </>
   );

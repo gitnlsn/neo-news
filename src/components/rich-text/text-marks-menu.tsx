@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/react";
+import { BoldIcon, ItalicIcon, StrikethroughIcon } from "lucide-react";
 import { RichTextButton } from "./button";
 
 interface TextMarksMenuProps {
@@ -12,19 +13,19 @@ export const TextMarksMenu = ({ editor }: TextMarksMenuProps) => {
         onClick={() => editor.chain().focus().toggleBold().run()}
         isActive={editor.isActive("bold")}
       >
-        Negrito
+        <BoldIcon />
       </RichTextButton>
       <RichTextButton
         onClick={() => editor.chain().focus().toggleItalic().run()}
         isActive={editor.isActive("italic")}
       >
-        Italico
+        <ItalicIcon />
       </RichTextButton>
       <RichTextButton
         onClick={() => editor.chain().focus().toggleStrike().run()}
         isActive={editor.isActive("strike")}
       >
-        Riscado
+        <StrikethroughIcon />
       </RichTextButton>
     </>
   );

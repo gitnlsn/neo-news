@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/react";
+import { Circle, CircleIcon } from "lucide-react";
 import { RichTextButton } from "./button";
 
 interface RichTextListsProps {
@@ -9,18 +10,18 @@ export const RichTextLists = ({ editor }: RichTextListsProps) => {
   return (
     <>
       <RichTextButton
-        type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         isActive={editor.isActive("bulletList")}
+        className="text-base font-semibold px-2 py-0"
       >
-        Marcadores
+        •
       </RichTextButton>
       <RichTextButton
-        type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         isActive={editor.isActive("orderedList")}
+        className="font-semibold text-base px-2 py-0"
       >
-        Numeração
+        1.
       </RichTextButton>
     </>
   );

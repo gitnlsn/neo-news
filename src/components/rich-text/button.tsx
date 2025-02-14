@@ -1,5 +1,5 @@
-import type { ButtonHTMLAttributes } from "react";
 import React from "react";
+import { cn } from "~/lib/utils";
 import { Button, type ButtonProps } from "../ui/button";
 
 interface RichTextButtonProps extends ButtonProps {
@@ -14,7 +14,7 @@ export const RichTextButton = React.forwardRef<
     <Button
       ref={ref}
       {...props}
-      className="rounded-none p-1 text-[10px] h-fit"
+      className={cn("rounded-none p-1 text-[10px] h-fit", props.className)}
       size="sm"
       type="button"
       variant={isActive ? "default" : "outline"}

@@ -136,7 +136,7 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, EditorProps>(
 
     return (
       <div>
-        <RichTextContainer className="w-full bg-muted">
+        <RichTextContainer className="w-full bg-muted flex-wrap">
           {renderTextMenu()}
           <RichTextSeparator />
           <RichTextAddImageButton

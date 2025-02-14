@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Editor } from "@tiptap/react";
+import { YoutubeIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -59,7 +60,9 @@ export const RichTextAddYoutubeVideoButton = ({
       }}
     >
       <DialogTrigger asChild className="-mt-[2px]">
-        <RichTextButton>Youtube</RichTextButton>
+        <RichTextButton>
+          <YoutubeIcon />
+        </RichTextButton>
       </DialogTrigger>
 
       <DialogContent>

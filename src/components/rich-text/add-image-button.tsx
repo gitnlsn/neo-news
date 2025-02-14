@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { File as UploadedFile } from "@prisma/client";
 import type { Editor } from "@tiptap/react";
-import { TrashIcon } from "lucide-react";
+import { ImageIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -104,7 +104,9 @@ export const RichTextAddImageButton = ({
       }}
     >
       <DialogTrigger asChild className="-mt-[2px]">
-        <RichTextButton>Imagem</RichTextButton>
+        <RichTextButton>
+          <ImageIcon />
+        </RichTextButton>
       </DialogTrigger>
 
       <DialogContent>

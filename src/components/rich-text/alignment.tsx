@@ -1,4 +1,10 @@
 import type { Editor } from "@tiptap/react";
+import {
+  AlignCenterIcon,
+  AlignJustifyIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+} from "lucide-react";
 import { RichTextButton } from "./button";
 
 interface RichTextAlignmentProps {
@@ -12,25 +18,25 @@ export const RichTextAlignment = ({ editor }: RichTextAlignmentProps) => {
         onClick={() => editor.chain().focus().setTextAlign("left").run()}
         isActive={editor.isActive({ textAlign: "left" })}
       >
-        Esquerda
+        <AlignLeftIcon />
       </RichTextButton>
       <RichTextButton
         onClick={() => editor.chain().focus().setTextAlign("center").run()}
         isActive={editor.isActive({ textAlign: "center" })}
       >
-        Centralizado
+        <AlignCenterIcon />
       </RichTextButton>
       <RichTextButton
         onClick={() => editor.chain().focus().setTextAlign("right").run()}
         isActive={editor.isActive({ textAlign: "right" })}
       >
-        Direita
+        <AlignRightIcon />
       </RichTextButton>
       <RichTextButton
         onClick={() => editor.chain().focus().setTextAlign("justify").run()}
         isActive={editor.isActive({ textAlign: "justify" })}
       >
-        Justificado
+        <AlignJustifyIcon />
       </RichTextButton>
     </>
   );
