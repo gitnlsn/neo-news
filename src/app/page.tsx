@@ -156,6 +156,15 @@ export default function Home() {
           </div>
         </Container>
       </section>
+
+      {/* Footer Section */}
+      <footer className="bg-black text-white">
+        <Container className="py-6">
+          <p className="text-center text-sm">
+            © 2025 Neo News. Todos os direitos reservados.
+          </p>
+        </Container>
+      </footer>
     </main>
   );
 }
