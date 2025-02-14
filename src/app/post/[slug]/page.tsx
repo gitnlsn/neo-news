@@ -129,7 +129,11 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
-      <div className="mt-10 flex justify-end">
+      <div className="mt-10 flex flex-wrap justify-end gap-2">
+        <Button asChild>
+          <Link href="/login">Criar anúncio</Link>
+        </Button>
+
         <Button variant="outline" asChild>
           <Link href={`/complaint/post/${post.slug}`}>Reportar</Link>
         </Button>
