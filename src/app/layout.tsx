@@ -30,8 +30,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <GoogleAnalytics gaId={env.GOOGLE_ANALYTICS_ID} />
-      <GoogleTagManager gtmId={env.GOOGLE_TAG_MANAGER_ID} />
+      <Suspense fallback={null}>
+        <GoogleAnalytics gaId={env.GOOGLE_ANALYTICS_ID} />
+        <GoogleTagManager gtmId={env.GOOGLE_TAG_MANAGER_ID} />
+      </Suspense>
 
       <body>
         <Suspense fallback={<div>Loading...</div>}>
