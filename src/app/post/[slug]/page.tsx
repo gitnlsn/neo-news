@@ -9,6 +9,7 @@ import { env } from "~/env";
 import { db } from "~/server/db";
 import dayjs from "~/utils/date/dayjs";
 import { getTextDescriptionFromHtml } from "~/utils/use-cases/get-text-description-from-html";
+import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
 import { getVideoUrlsFromHtml } from "~/utils/use-cases/get-video-urls-from-html";
 
 interface Params {
@@ -86,8 +87,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `${env.APP_PUBLIC_URL}/post/${post.slug}`,
       publishedTime: post.createdAt.toISOString(),
-      images: post.images.map((image) => ({
-        url: image.url,
+      images: getUrlsFromHtml(post.content).map((url) => ({
+        url,
+        alt: post.title,
       })),
       videos: getVideoUrlsFromHtml(post.content).map((url) => ({
         url,
