@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { PrivateLayout } from "~/components/private-layout"; // Importando o layout privado
+import { PrivateLayout } from "~/components/layout/private-layout"; // Importando o layout privado
 import { Button } from "~/components/ui/button";
 import {
   Card,

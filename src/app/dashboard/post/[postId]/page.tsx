@@ -9,8 +9,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { PrivateLayout } from "~/components/layout/private-layout";
 import { ComplaintsPaginator } from "~/components/modules/sidebar/complaints-paginator";
-import { PrivateLayout } from "~/components/private-layout";
 import {
   RichTextEditor,
   type RichTextEditorRef,

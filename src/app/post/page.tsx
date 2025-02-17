@@ -1,6 +1,7 @@
 import type { Post } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
+import { PublicLayout } from "~/components/layout/public-layout";
 import {
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Container } from "~/components/ui/container";
 import { db } from "~/server/db";
 import { filterImagesAndVideosFromHtml } from "~/utils/use-cases/filter-images-and-videos-from-html";
 import { getUrlsFromHtml } from "~/utils/use-cases/get-urls-from-html";
@@ -103,17 +105,19 @@ export default async function PostsPage() {
   const posts = await getPosts();
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        Últimos Anúncios
-      </h1>
+    <PublicLayout>
+      <Container className="py-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+          Últimos Anúncios
+        </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post) => (
-          <EventCard key={post.id} post={post} />
-        ))}
-      </div>
-    </main>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {posts.map((post) => (
+            <EventCard key={post.id} post={post} />
+          ))}
+        </div>
+      </Container>
+    </PublicLayout>
   );
 }
 

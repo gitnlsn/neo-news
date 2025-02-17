@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Icons } from "~/components/icons";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -12,10 +11,12 @@ import { Container } from "~/components/ui/container";
 
 import Image from "next/image";
 import TamaraGak from "~/assets/landing-page/tamara-gak-GWbIHT51VT4-unsplash.jpg";
+import { PublicLayout } from "~/components/layout/public-layout";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col">
+    <PublicLayout>
+      {/* Hero Section */}
       {/* Hero Section */}
       <section className="border-b bg-background">
         <Container className="py-24">
@@ -156,15 +157,6 @@ export default function Home() {
           </div>
         </Container>
       </section>
-
-      {/* Footer Section */}
-      <footer className="bg-black text-white">
-        <Container className="py-6">
-          <p className="text-center text-sm">
-            © 2025 Neo News. Todos os direitos reservados.
-          </p>
-        </Container>
-      </footer>
-    </main>
+    </PublicLayout>
   );
 }

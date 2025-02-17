@@ -3,9 +3,9 @@
 import { MoreHorizontal, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { PrivateLayout } from "~/components/layout/private-layout";
 import { Loading } from "~/components/molecular/loading";
 import { Pagination } from "~/components/pagination";
-import { PrivateLayout } from "~/components/private-layout";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,

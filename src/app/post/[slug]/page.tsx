@@ -2,6 +2,7 @@ import keywordExtractor from "keyword-extractor";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { PublicLayout } from "~/components/layout/public-layout";
 import { Button } from "~/components/ui/button";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
@@ -113,33 +114,38 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   }
 
   return (
-    <Container className="max-w-screen-lg py-10">
-      <div className="flex flex-col gap-0">
-        <Typography.H2>{post.title}</Typography.H2>
+    <PublicLayout>
+      <Container className="max-w-screen-lg py-10">
+        <div className="flex flex-col gap-0">
+          <Typography.H2>{post.title}</Typography.H2>
 
-        <Typography.Muted>
-          Publicado em {dayjs(post.createdAt).format("DD/MM/YYYY")},{" "}
-          {dayjs(post.createdAt).fromNow()}, por{" "}
-          <Link href={`/profile/${post.profile.id}`} className="text-blue-600">
-            {post.profile.title} ({post.profile.user.email})
-          </Link>
-        </Typography.Muted>
-      </div>
+          <Typography.Muted>
+            Publicado em {dayjs(post.createdAt).format("DD/MM/YYYY")},{" "}
+            {dayjs(post.createdAt).fromNow()}, por{" "}
+            <Link
+              href={`/profile/${post.profile.id}`}
+              className="text-blue-600"
+            >
+              {post.profile.title} ({post.profile.user.email})
+            </Link>
+          </Typography.Muted>
+        </div>
 
-      <div
-        className="tiptap"
-        dangerouslySetInnerHTML={{ __html: post.content }}
-      />
+        <div
+          className="tiptap"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
 
-      <div className="mt-10 flex flex-wrap justify-end gap-2">
-        <Button asChild>
-          <Link href="/login">Criar anúncio</Link>
-        </Button>
+        <div className="mt-10 flex flex-wrap justify-end gap-2">
+          <Button asChild>
+            <Link href="/login">Criar anúncio</Link>
+          </Button>
 
-        <Button variant="outline" asChild>
-          <Link href={`/complaint/post/${post.slug}`}>Reportar</Link>
-        </Button>
-      </div>
-    </Container>
+          <Button variant="outline" asChild>
+            <Link href={`/complaint/post/${post.slug}`}>Reportar</Link>
+          </Button>
+        </div>
+      </Container>
+    </PublicLayout>
   );
 }

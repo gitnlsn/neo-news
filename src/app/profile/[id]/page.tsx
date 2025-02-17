@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { PublicLayout } from "~/components/layout/public-layout";
 import { Button } from "~/components/ui/button";
 import { Container } from "~/components/ui/container";
 import { Typography } from "~/components/ui/typography";
@@ -117,33 +118,35 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   }
 
   return (
-    <Container className="max-w-screen-lg py-10">
-      <div className="flex flex-col gap-4">
-        <Typography.H1>{profile.title}</Typography.H1>
+    <PublicLayout>
+      <Container className="max-w-screen-lg py-10">
+        <div className="flex flex-col gap-4">
+          <Typography.H1>{profile.title}</Typography.H1>
 
-        <Typography.Muted>E-mail: {profile.user.email}</Typography.Muted>
+          <Typography.Muted>E-mail: {profile.user.email}</Typography.Muted>
 
-        {profile.logo?.url && (
-          <Image
-            src={profile.logo.url}
-            alt={profile.title}
-            width={800}
-            height={800}
-            className="mx-auto"
-          />
-        )}
-      </div>
+          {profile.logo?.url && (
+            <Image
+              src={profile.logo.url}
+              alt={profile.title}
+              width={800}
+              height={800}
+              className="mx-auto"
+            />
+          )}
+        </div>
 
-      <div
-        className="tiptap"
-        dangerouslySetInnerHTML={{ __html: profile.description }}
-      />
+        <div
+          className="tiptap"
+          dangerouslySetInnerHTML={{ __html: profile.description }}
+        />
 
-      <div className="mt-10 flex justify-end">
-        <Button variant="outline" asChild>
-          <Link href={`/complaint/profile/${profile.id}`}>Reportar</Link>
-        </Button>
-      </div>
-    </Container>
+        <div className="mt-10 flex justify-end">
+          <Button variant="outline" asChild>
+            <Link href={`/complaint/profile/${profile.id}`}>Reportar</Link>
+          </Button>
+        </div>
+      </Container>
+    </PublicLayout>
   );
 }
