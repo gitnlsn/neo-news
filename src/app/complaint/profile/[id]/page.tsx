@@ -6,6 +6,7 @@ import { use, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
+import { PublicLayout } from "~/components/layout/public-layout";
 
 import { Button } from "~/components/ui/button";
 import { Container } from "~/components/ui/container";
@@ -79,54 +80,56 @@ export default function PostComplaintPage({
   };
 
   return (
-    <Container className="max-w-2xl py-10">
-      <Typography.H2>Reportar</Typography.H2>
+    <PublicLayout>
+      <Container className="max-w-2xl py-10">
+        <Typography.H2>Reportar</Typography.H2>
 
-      {showProfile.data && (
-        <Typography.P>
-          Perfil a ser reportado:{" "}
-          <Typography.Span className="font-semibold">
-            {showProfile.data.title}
-          </Typography.Span>{" "}
-          (<Typography.Span>{showProfile.data.user.email}</Typography.Span>)
-        </Typography.P>
-      )}
+        {showProfile.data && (
+          <Typography.P>
+            Perfil a ser reportado:{" "}
+            <Typography.Span className="font-semibold">
+              {showProfile.data.title}
+            </Typography.Span>{" "}
+            (<Typography.Span>{showProfile.data.user.email}</Typography.Span>)
+          </Typography.P>
+        )}
 
-      <Form {...form}>
-        <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-12">
-                <FormLabel>Descrição</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Descreva sua reclamação em detalhes..."
-                    disabled={createComplaint.isPending}
-                    aria-label="Descrição da reclamação"
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Essa reclamação será enviada para o administrador do site e
-                  será avaliada.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Form {...form}>
+          <FormWrapper onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-12">
+                  <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Descreva sua reclamação em detalhes..."
+                      disabled={createComplaint.isPending}
+                      aria-label="Descrição da reclamação"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Essa reclamação será enviada para o administrador do site e
+                    será avaliada.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button
-            type="submit"
-            className="col-span-12  "
-            isLoading={createComplaint.isPending}
-          >
-            Enviar Reclamação
-          </Button>
-        </FormWrapper>
-      </Form>
-    </Container>
+            <Button
+              type="submit"
+              className="col-span-12  "
+              isLoading={createComplaint.isPending}
+            >
+              Enviar Reclamação
+            </Button>
+          </FormWrapper>
+        </Form>
+      </Container>
+    </PublicLayout>
   );
 }
