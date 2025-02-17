@@ -17,6 +17,7 @@ import {
 const navigationItems = [
   { name: "Início", href: "/" },
   { name: "Anúncios", href: "/post" },
+  { name: "Planos", href: "/about/pricing" },
 ];
 
 export const Header = () => {
